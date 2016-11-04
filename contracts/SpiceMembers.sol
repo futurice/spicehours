@@ -14,6 +14,12 @@ contract SpiceMembers {
     mapping (uint => address) public memberAddress;
     uint public memberCount;
 
+    event TransferOwnership(address sender, address owner);
+    event AddMember(address sender, address member);
+    event RemoveMember(address sender, address member);
+    event SetMemberLevel(address sender, address member, MemberLevel level);
+    event SetMemberInfo(address sender, address member, bytes32 info);
+
     function SpiceMembers() {
         owner = msg.sender;
 
@@ -40,6 +46,7 @@ contract SpiceMembers {
             member[target] = Member(memberCount, MemberLevel.None, 0);
         }
         owner = target;
+        TransferOwnership(msg.sender, owner);
     }
 
     function addMember(address target) onlyManager {
@@ -55,6 +62,7 @@ contract SpiceMembers {
             // Set memberLevel to initial value with basic access
             member[target].level = MemberLevel.Member;
         }
+        AddMember(msg.sender, target);
     }
 
     function removeMember(address target) {
@@ -64,6 +72,7 @@ contract SpiceMembers {
         if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(target)) throw;
 
         member[target].level = MemberLevel.None;
+        RemoveMember(msg.sender, target);
     }
 
     function setMemberLevel(address target, MemberLevel level) {
@@ -71,12 +80,23 @@ contract SpiceMembers {
         if (level == MemberLevel.None || level > MemberLevel.Director) throw;
         // Make sure the target is currently already a member
         if (memberLevel(target) == MemberLevel.None) throw;
-        // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(target)) throw;
         // Make sure the new level is lower level than we are (we cannot overpromote)
         if (msg.sender != owner && memberLevel(msg.sender) <= level) throw;
+        // Make sure the member is currently on lower level than we are
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(target)) throw;
 
         member[target].level = level;
+        SetMemberLevel(msg.sender, target, level);
+    }
+
+    function setMemberInfo(address target, bytes32 info) {
+        // Make sure the target is currently already a member
+        if (memberLevel(target) == MemberLevel.None) throw;
+        // Make sure the member is currently on lower level than we are
+        if (msg.sender != owner && msg.sender != target && memberLevel(msg.sender) <= memberLevel(target)) throw;
+
+        member[target].info = info;
+        SetMemberInfo(msg.sender, target, info);
     }
 
     function memberId(address target) returns (uint) {
