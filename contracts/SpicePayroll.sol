@@ -9,8 +9,8 @@ contract SpicePayroll {
     address owner;
 
     address public handler;
-    uint public from;
-    uint public until;
+    uint public fromTimestamp;
+    uint public untilTimestamp;
 
     PayrollLine[] lines;
 
@@ -19,11 +19,11 @@ contract SpicePayroll {
         _;
     }
 
-    function SpicePayroll(address handlerAddress, uint fromTimestamp) {
+    function SpicePayroll(address handlerAddress, uint from) {
         owner = msg.sender;
         handler = handlerAddress;
-        from = fromTimestamp;
-        until = now;
+        fromTimestamp = from;
+        untilTimestamp = now;
     }
 
     function addLine(bytes32 info, uint balance) onlyOwner {
