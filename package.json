@@ -4,6 +4,8 @@
   "description": "",
   "scripts": {
     "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "testrpc": "testrpc",
     "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL"
   },
   "repository": {
