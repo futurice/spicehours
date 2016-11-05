@@ -14,23 +14,12 @@ function getTransactionError(func) {
 
 contract("SpiceHours", function(accounts) {
 
-  describe("test", function() {
+  describe("balance", function() {
 
-    it("should not throw an error for owner", function() {
+    it("should be zero in the beginning", function() {
       var contract = SpiceHours.deployed();
-      return getTransactionError(function() {
-        return contract.test();
-      }).then(function(err) {
-        assert.isUndefined(err, "owner should have access");
-      });
-    });
-
-    it("should throw an error for others", function() {
-      var contract = SpiceHours.deployed();
-      return getTransactionError(function() {
-        return contract.test({from: accounts[1]});
-      }).then(function(err) {
-        assert.isDefined(err, "others should not have access");
+      return contract.balance.call(accounts[0]).then(function(balance) {
+        assert.equal(balance.valueOf(), 0, "balance should be zero");
       });
     });
   });
