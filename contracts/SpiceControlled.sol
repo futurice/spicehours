@@ -29,19 +29,19 @@ contract SpiceControlled {
         members = SpiceMembers(membersAddress);
     }
 
-    function hasOwnerAccess(address target) returns (bool) {
-        return (target == members.owner());
+    function hasOwnerAccess(address _target) returns (bool) {
+        return (_target == members.owner());
     }
 
-    function hasDirectorAccess(address target) returns (bool) {
-        return (members.memberLevel(target) >= SpiceMembers.MemberLevel.Director || hasOwnerAccess(target));
+    function hasDirectorAccess(address _target) returns (bool) {
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Director || hasOwnerAccess(_target));
     }
 
-    function hasManagerAccess(address target) returns (bool) {
-        return (members.memberLevel(target) >= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(target));
+    function hasManagerAccess(address _target) returns (bool) {
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(_target));
     }
 
-    function hasMemberAccess(address target) returns (bool) {
-        return (members.memberLevel(target) >= SpiceMembers.MemberLevel.Member || hasOwnerAccess(target));
+    function hasMemberAccess(address _target) returns (bool) {
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Member || hasOwnerAccess(_target));
     }
 }

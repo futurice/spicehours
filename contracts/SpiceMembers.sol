@@ -38,76 +38,76 @@ contract SpiceMembers {
         _;
     }
 
-    function transferOwnership(address target) onlyOwner {
+    function transferOwnership(address _target) onlyOwner {
         // If new owner has no memberId, create one
-        if (member[target].id == 0) {
+        if (member[_target].id == 0) {
             memberCount++;
-            memberAddress[memberCount] = target;
-            member[target] = Member(memberCount, MemberLevel.None, 0);
+            memberAddress[memberCount] = _target;
+            member[_target] = Member(memberCount, MemberLevel.None, 0);
         }
-        owner = target;
+        owner = _target;
         TransferOwnership(msg.sender, owner);
     }
 
-    function addMember(address target) onlyManager {
+    function addMember(address _target) onlyManager {
         // Make sure trying to add an existing member throws an error
-        if (memberLevel(target) != MemberLevel.None) throw;
+        if (memberLevel(_target) != MemberLevel.None) throw;
 
         // If added member has no memberId, create one
-        if (member[target].id == 0) {
+        if (member[_target].id == 0) {
             memberCount++;
-            memberAddress[memberCount] = target;
-            member[target] = Member(memberCount, MemberLevel.Member, 0);
+            memberAddress[memberCount] = _target;
+            member[_target] = Member(memberCount, MemberLevel.Member, 0);
         } else {
             // Set memberLevel to initial value with basic access
-            member[target].level = MemberLevel.Member;
+            member[_target].level = MemberLevel.Member;
         }
-        AddMember(msg.sender, target);
+        AddMember(msg.sender, _target);
     }
 
-    function removeMember(address target) {
+    function removeMember(address _target) {
         // Make sure trying to remove a non-existing member throws an error
-        if (memberLevel(target) == MemberLevel.None) throw;
+        if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure members are only allowed to delete members lower than their level
-        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
-        member[target].level = MemberLevel.None;
-        RemoveMember(msg.sender, target);
+        member[_target].level = MemberLevel.None;
+        RemoveMember(msg.sender, _target);
     }
 
-    function setMemberLevel(address target, MemberLevel level) {
+    function setMemberLevel(address _target, MemberLevel level) {
         // Make sure all levels are larger than None but not higher than Director
         if (level == MemberLevel.None || level > MemberLevel.Director) throw;
-        // Make sure the target is currently already a member
-        if (memberLevel(target) == MemberLevel.None) throw;
+        // Make sure the _target is currently already a member
+        if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the new level is lower level than we are (we cannot overpromote)
         if (msg.sender != owner && memberLevel(msg.sender) <= level) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
-        member[target].level = level;
-        SetMemberLevel(msg.sender, target, level);
+        member[_target].level = level;
+        SetMemberLevel(msg.sender, _target, level);
     }
 
-    function setMemberInfo(address target, bytes32 info) {
+    function setMemberInfo(address _target, bytes32 info) {
         // Make sure the target is currently already a member
-        if (memberLevel(target) == MemberLevel.None) throw;
+        if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner && msg.sender != target && memberLevel(msg.sender) <= memberLevel(target)) throw;
+        if (msg.sender != owner && msg.sender != _target && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
-        member[target].info = info;
-        SetMemberInfo(msg.sender, target, info);
+        member[_target].info = info;
+        SetMemberInfo(msg.sender, _target, info);
     }
 
-    function memberId(address target) returns (uint) {
-        return member[target].id;
+    function memberId(address _target) returns (uint) {
+        return member[_target].id;
     }
 
-    function memberLevel(address target) returns (MemberLevel) {
-        return member[target].level;
+    function memberLevel(address _target) returns (MemberLevel) {
+        return member[_target].level;
     }
 
-    function memberInfo(address target) returns (bytes32) {
-        return member[target].info;
+    function memberInfo(address _target) returns (bytes32) {
+        return member[_target].info;
     }
 }

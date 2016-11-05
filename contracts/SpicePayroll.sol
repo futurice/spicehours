@@ -19,23 +19,23 @@ contract SpicePayroll {
         _;
     }
 
-    function SpicePayroll(address handlerAddress, uint from) {
+    function SpicePayroll(address _handler, uint _fromTimestamp) {
         owner = msg.sender;
-        handler = handlerAddress;
-        fromTimestamp = from;
+        handler = _handler;
+        fromTimestamp = _fromTimestamp;
         untilTimestamp = now;
     }
 
-    function addLine(bytes32 info, uint balance) onlyOwner {
-        lines[lines.length++] = PayrollLine(info, balance);
+    function addLine(bytes32 _info, uint _balance) onlyOwner {
+        lines[lines.length++] = PayrollLine(_info, _balance);
     }
 
-    function getLineInfo(uint index) returns (bytes32) {
-        return lines[index].info;
+    function getLineInfo(uint _index) returns (bytes32) {
+        return lines[_index].info;
     }
 
-    function getLineBalance(uint index) returns (uint) {
-        return lines[index].balance;
+    function getLineBalance(uint _index) returns (uint) {
+        return lines[_index].balance;
     }
 
     function getLineCount() returns (uint) {
