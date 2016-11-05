@@ -1,0 +1,22 @@
+{
+  "name": "spicehours",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvah/spicehours.git"
+  },
+  "author": "Juho Vähä-Herttua",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jvah/spicehours/issues"
+  },
+  "homepage": "https://github.com/jvah/spicehours#readme",
+  "dependencies": {
+    "ethereumjs-testrpc": "3.0.0",
+    "truffle": "2.1.1"
+  }
+}
