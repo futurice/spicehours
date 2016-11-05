@@ -25,19 +25,12 @@ contract SpiceRates is SpiceControlled, IBalanceConverter {
         maxHours = _maxHours;
     }
 
-    function setUnpaidPercentageInternal(bytes32 _info, uint8 _percentage) {
-        if (_info == 0) throw;
+    function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyMember {
+        if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
         if (_percentage > 100) throw;
+        if (_info == 0) throw;
 
         unpaidPercentage[_info] = _percentage;
-    }
-
-    function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyManager {
-        setUnpaidPercentageInternal(_info, _percentage);
-    }
-
-    function setUnpaidPercentage(uint8 _percentage) onlyMember {
-        setUnpaidPercentageInternal(members.memberInfo(msg.sender), _percentage);
     }
 
     function convertBalance(bytes32 _info, uint balance) returns (uint) {
