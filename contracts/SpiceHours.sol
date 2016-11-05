@@ -28,7 +28,6 @@ contract SpiceHours is SpiceControlled {
 
     function markHours(bytes32 info, bytes32 description, int secs) onlyMember {
         if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != info) throw;
-        if (info == 0) throw;
 
         adjustHours(info, secs);
         MarkHours(msg.sender, info, description, secs);
