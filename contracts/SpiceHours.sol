@@ -7,8 +7,8 @@ contract SpiceHours is SpiceControlled {
     mapping (bytes32 => uint) public balance;
     uint public fromTimestamp;
 
-    event MarkHours(address sender, bytes32 info, bytes32 description, int secs);
-    event FixHours(address sender, bytes32 info, bytes32 description, int secs);
+    event MarkHours(address indexed _sender, bytes32 indexed _info, bytes32 indexed _description, int _secs);
+    event FixHours(address indexed _sender, bytes32 indexed _info, bytes32 indexed _description, int _secs);
 
     function SpiceHours(address membersAddress) SpiceControlled(membersAddress) {
         fromTimestamp = now;
