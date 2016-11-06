@@ -4,25 +4,25 @@ import "SpiceControlled.sol";
 import "IBalanceConverter.sol";
 
 contract SpiceRates is SpiceControlled, IBalanceConverter {
+    uint public maxTime;
     uint public hourlyRate;
-    uint public maxHours;
     mapping(bytes32 => uint8) public unpaidPercentage;
 
     function SpiceRates(
         address _members,
-        uint _hourlyRate,
-        uint _maxHours
+        uint _maxTime,
+        uint _hourlyRate
     ) SpiceControlled(_members) {
+        maxTime = _maxTime;
         hourlyRate = _hourlyRate;
-        maxHours = _maxHours;
     }
 
     function setHourlyRate(uint _hourlyRate) onlyDirector {
         hourlyRate = _hourlyRate;
     }
 
-    function setMaxHours(uint _maxHours) onlyDirector {
-        maxHours = _maxHours;
+    function setMaxTime(uint _maxTime) onlyDirector {
+        maxTime = _maxTime;
     }
 
     function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyMember {
@@ -33,10 +33,12 @@ contract SpiceRates is SpiceControlled, IBalanceConverter {
         unpaidPercentage[_info] = _percentage;
     }
 
-    function convertBalance(bytes32 _info, uint balance) returns (uint) {
-        if (balance > maxHours) {
-            balance = maxHours;
+    function convertBalance(bytes32 _info, uint _input) returns (uint) {
+        if (_input > maxTime) {
+            _input = maxTime;
         }
-        return (balance * hourlyRate * (100 - unpaidPercentage[_info])) / 100;
+
+        uint fullTimeOutput = _input * hourlyRate / 3600;
+        return (fullTimeOutput * (100 - unpaidPercentage[_info])) / 100;
     }
 }

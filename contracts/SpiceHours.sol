@@ -11,6 +11,7 @@ contract SpiceHours is SpiceControlled {
     }
 
     uint public fromTimestamp;
+    address[] payrolls;
 
     mapping (bytes32 => MemberBalance) balances;
     bytes32[] infos;
@@ -71,6 +72,17 @@ contract SpiceHours is SpiceControlled {
             payroll.addLine(infos[i], balance);
         }
         delete infos;
+
         Payroll(msg.sender, payroll);
+        payrolls.push(payroll);
+        fromTimestamp = now;
+    }
+
+    function payroll(uint _index) returns (address) {
+        return payrolls[_index];
+    }
+
+    function payrollCount() returns (uint) {
+        return payrolls.length;
     }
 }

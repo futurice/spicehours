@@ -28,7 +28,7 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => members.setMemberInfo(member, memberInfo, {from: manager})))
       .then(() => getTransaction(() => hours.markHours(memberInfo, 0, 3600, {from: member})))
       .then(() => getTransaction(() => hours.markHours(memberInfo, 0, 1800, {from: manager})))
-      .then(() => getTransaction(() => hours.markHours(outsiderInfo1, 0, 7200, {from: director})))
+      .then(() => getTransaction(() => hours.markHours(outsiderInfo1, 0, 144000, {from: director})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, 5400, {from: owner})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
       .then(() => getTransaction(() => hours.fixHours(memberInfo, 0, -900, {from: director})))
@@ -39,8 +39,57 @@ contract("E2E", function(accounts) {
       ]))
       .then(balances => {
         assert.equal(balances[0].toString(), "4500", "member balance incorrect");
-        assert.equal(balances[1].toString(), "7200", "outsider1 balance incorrect");
+        assert.equal(balances[1].toString(), "144000", "outsider1 balance incorrect");
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
+      })
+      .then(() => getTransaction(() => hours.processPayroll(rates.address)))
+      .then(() => hours.payrollCount.call())
+      .then(payrollCount => {
+        assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
+      });
+  });
+
+  it("should have calculated the hours correctly", function() {
+    var hours = SpiceHours.deployed();
+
+    function balanceForInfo(info) {
+      if (info.substr(0, memberInfo.length) === memberInfo) return "18750000"; // 1.25h * 15000000
+      if (info.substr(0, outsiderInfo1.length) === outsiderInfo1) return "450000000"; // 30h * 15000000
+      if (info.substr(0, outsiderInfo2.length) === outsiderInfo2) return "20833333"; // 5000/3600h * 15000000
+      return "0";
+    }
+
+    return Promise.resolve()
+      .then(() => hours.payroll.call(0))
+      .then(payrollAddress => {
+        assert.notEqual(payrollAddress, NULL_ADDRESS, "should not be null");
+        var payroll = SpicePayroll.at(payrollAddress);
+        return Promise.resolve()
+          .then(() => payroll.lineCount.call())
+          .then(lineCount => {
+            assert.equal(lineCount.valueOf(), 3, "should have three payroll lines");
+          })
+          .then(() => Promise.all([
+            payroll.lineInfo.call(0),
+            payroll.lineBalance.call(0)
+          ]))
+          .then(line => {
+            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+          })
+          .then(() => Promise.all([
+            payroll.lineInfo.call(1),
+            payroll.lineBalance.call(1)
+          ]))
+          .then(line => {
+            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+          })
+          .then(() => Promise.all([
+            payroll.lineInfo.call(2),
+            payroll.lineBalance.call(2)
+          ]))
+          .then(line => {
+            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+          });
       });
   });
 });
