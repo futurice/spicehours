@@ -17,7 +17,6 @@ contract("E2E", function(accounts) {
   it("should be able to handle a complete payroll", function() {
     var members = SpiceMembers.deployed();
     var hours = SpiceHours.deployed();
-    var rates = SpiceRates.deployed();
 
     return Promise.resolve()
       .then(() => getTransaction(() => members.addMember(director, {from: owner})))
@@ -41,25 +40,27 @@ contract("E2E", function(accounts) {
         assert.equal(balances[0].toString(), "4500", "member balance incorrect");
         assert.equal(balances[1].toString(), "144000", "outsider1 balance incorrect");
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
-      })
-      .then(() => getTransaction(() => hours.processPayroll(rates.address)))
-      .then(() => hours.payrollCount())
-      .then(payrollCount => {
-        assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
       });
   });
 
   it("should have calculated the hours correctly", function() {
     var hours = SpiceHours.deployed();
+    var rates = SpiceRates.deployed();
 
     function balanceForInfo(info) {
-      if (info.substr(0, memberInfo.length) === memberInfo) return "18750000"; // 1.25h * 15000000
+      if (info.substr(0, memberInfo.length) === memberInfo) return "15000000"; // 1.25h * 0.8 * 15000000
       if (info.substr(0, outsiderInfo1.length) === outsiderInfo1) return "450000000"; // 30h * 15000000
       if (info.substr(0, outsiderInfo2.length) === outsiderInfo2) return "20833333"; // 5000/3600h * 15000000
       return "0";
     }
 
     return Promise.resolve()
+      .then(() => getTransaction(() => rates.setUnpaidPercentage(memberInfo, 20)))
+      .then(() => getTransaction(() => hours.processPayroll(rates.address)))
+      .then(() => hours.payrollCount())
+      .then(payrollCount => {
+        assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
+      })
       .then(() => hours.payroll(0))
       .then(payrollAddress => {
         assert.notEqual(payrollAddress, NULL_ADDRESS, "should not be null");
