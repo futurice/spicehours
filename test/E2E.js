@@ -33,9 +33,9 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
       .then(() => getTransaction(() => hours.fixHours(memberInfo, 0, -900, {from: director})))
       .then(() => Promise.all([
-        hours.balance(memberInfo),
-        hours.balance(outsiderInfo1),
-        hours.balance(outsiderInfo2)
+        hours.balance.call(memberInfo),
+        hours.balance.call(outsiderInfo1),
+        hours.balance.call(outsiderInfo2)
       ]))
       .then(balances => {
         assert.equal(balances[0].toString(), "4500", "member balance incorrect");
