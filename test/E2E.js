@@ -33,9 +33,9 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
       .then(() => getTransaction(() => hours.fixHours(memberInfo, 0, -900, {from: director})))
       .then(() => Promise.all([
-        hours.balance.call(memberInfo),
-        hours.balance.call(outsiderInfo1),
-        hours.balance.call(outsiderInfo2)
+        hours.balance(memberInfo),
+        hours.balance(outsiderInfo1),
+        hours.balance(outsiderInfo2)
       ]))
       .then(balances => {
         assert.equal(balances[0].toString(), "4500", "member balance incorrect");
@@ -43,7 +43,7 @@ contract("E2E", function(accounts) {
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
       })
       .then(() => getTransaction(() => hours.processPayroll(rates.address)))
-      .then(() => hours.payrollCount.call())
+      .then(() => hours.payrollCount())
       .then(payrollCount => {
         assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
       });
@@ -60,32 +60,32 @@ contract("E2E", function(accounts) {
     }
 
     return Promise.resolve()
-      .then(() => hours.payroll.call(0))
+      .then(() => hours.payroll(0))
       .then(payrollAddress => {
         assert.notEqual(payrollAddress, NULL_ADDRESS, "should not be null");
         var payroll = SpicePayroll.at(payrollAddress);
         return Promise.resolve()
-          .then(() => payroll.lineCount.call())
+          .then(() => payroll.lineCount())
           .then(lineCount => {
             assert.equal(lineCount.valueOf(), 3, "should have three payroll lines");
           })
           .then(() => Promise.all([
-            payroll.lineInfo.call(0),
-            payroll.lineBalance.call(0)
+            payroll.lineInfo(0),
+            payroll.lineBalance(0)
           ]))
           .then(line => {
             assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
           })
           .then(() => Promise.all([
-            payroll.lineInfo.call(1),
-            payroll.lineBalance.call(1)
+            payroll.lineInfo(1),
+            payroll.lineBalance(1)
           ]))
           .then(line => {
             assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
           })
           .then(() => Promise.all([
-            payroll.lineInfo.call(2),
-            payroll.lineBalance.call(2)
+            payroll.lineInfo(2),
+            payroll.lineBalance(2)
           ]))
           .then(line => {
             assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);

@@ -9,7 +9,7 @@ contract("SpiceMembers", function(accounts) {
 
     it("should be set initially", function() {
       var contract = SpiceMembers.deployed();
-      return contract.owner.call().then(function(owner) {
+      return contract.owner().then(function(owner) {
         assert.equal(owner, accounts[0], "owner should be the default account");
       });
     });
@@ -19,7 +19,7 @@ contract("SpiceMembers", function(accounts) {
 
     it("should return None for non-members", function() {
       var contract = SpiceMembers.deployed();
-      return contract.memberLevel.call(accounts[1]).then(function(level) {
+      return contract.memberLevel(accounts[1]).then(function(level) {
         assert.equal(level.valueOf(), 0, "non-members should have no level");
       });
     });
@@ -29,7 +29,7 @@ contract("SpiceMembers", function(accounts) {
 
     it("should return 1 for initial owner", function() {
       var contract = SpiceMembers.deployed();
-      return contract.memberId.call(accounts[0]).then(function(level) {
+      return contract.memberId(accounts[0]).then(function(level) {
         assert.equal(level.valueOf(), 1, "initial owner should have id 1");
       });
     });
@@ -39,7 +39,7 @@ contract("SpiceMembers", function(accounts) {
 
     it("should return null address for non-members", function() {
       var contract = SpiceMembers.deployed();
-      return contract.memberAddress.call(accounts[1]).then(function(member) {
+      return contract.memberAddress(accounts[1]).then(function(member) {
         assert.equal(member, NULL_ADDRESS, "member address should not be found");
       });
     });
@@ -49,7 +49,7 @@ contract("SpiceMembers", function(accounts) {
 
     it("should be one initially", function() {
       var contract = SpiceMembers.deployed();
-      return contract.memberCount.call().then(function(count) {
+      return contract.memberCount().then(function(count) {
         assert.equal(count.valueOf(), 1, "member count should be one");
       });
     });
@@ -72,7 +72,7 @@ contract("SpiceMembers", function(accounts) {
         return contract.transferOwnership(accounts[1]);
       }).then(function(err) {
         assert.isUndefined(err, "owner should be able to transfer");
-        return contract.owner.call();
+        return contract.owner();
       }).then(function(owner) {
         assert.equal(owner, accounts[1], "ownership not changed");
       });
@@ -89,7 +89,7 @@ contract("SpiceMembers", function(accounts) {
         });
       }).then(function(err) {
         assert.isUndefined(err, "owner should be able to set member level");
-        return contract.memberLevel.call(accounts[1]);
+        return contract.memberLevel(accounts[1]);
       }).then(function(level) {
         assert.equal(level.valueOf(), 0, "ownership should not change level");
         return getTransactionError(function() {
@@ -97,10 +97,10 @@ contract("SpiceMembers", function(accounts) {
         });
       }).then(function(err) {
         assert.isUndefined(err, "new owner should be able to transfer");
-        return contract.memberLevel.call(accounts[0]);
+        return contract.memberLevel(accounts[0]);
       }).then(function(level) {
         assert.equal(level, 2, "owner should keep old member level");
-        return contract.memberCount.call();
+        return contract.memberCount();
       }).then(function(count) {
         assert.equal(count.valueOf(), 2, "member count should be two");
       });
@@ -129,13 +129,13 @@ contract("SpiceMembers", function(accounts) {
         return contract.addMember(accounts[1]);
       }).then(function(err) {
         assert.isUndefined(err, "should allow adding a new member by the owner");
-        return contract.memberCount.call();
+        return contract.memberCount();
       }).then(function(count) {
         assert.equal(count.valueOf(), 2, "new member count should be 2");
-        return contract.memberAddress.call(count);
+        return contract.memberAddress(count);
       }).then(function(member) {
         assert.equal(member, accounts[1], "new member address should be saved");
-        return contract.memberLevel.call(member);
+        return contract.memberLevel(member);
       }).then(function(level) {
         assert.equal(level.valueOf(), 1, "new member should have the lowest level");
       });
@@ -175,9 +175,9 @@ contract("SpiceMembers", function(accounts) {
 
     it("should have created a new member id for a member that doesn't have one yet", function() {
       var contract = SpiceMembers.deployed();
-      return contract.memberId.call(accounts[2]).then(function(id) {
+      return contract.memberId(accounts[2]).then(function(id) {
         assert.equal(id.valueOf(), 3, "third account should have id 3");
-        return contract.memberCount.call();
+        return contract.memberCount();
       }).then(function(count) {
         assert.equal(count.valueOf(), 3, "should have three members");
       });
@@ -193,13 +193,13 @@ contract("SpiceMembers", function(accounts) {
         return contract.removeMember(accounts[1]);
       }).then(function(err) {
         assert.isUndefined(err, "should allow removing an existing member");
-        return contract.memberCount.call();
+        return contract.memberCount();
       }).then(function(count) {
         assert.equal(count.valueOf(), 3, "member count should be same after removal");
-        return contract.memberAddress.call(2);
+        return contract.memberAddress(2);
       }).then(function(member) {
         assert.equal(member, accounts[1], "member address should stay after removal");
-        return contract.memberLevel.call(accounts[1]);
+        return contract.memberLevel(accounts[1]);
       }).then(function(level) {
         assert.equal(level.valueOf(), 0, "member level should be zero after removal");
       });

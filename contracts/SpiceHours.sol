@@ -26,7 +26,15 @@ contract SpiceHours is SpiceControlled {
         fromTimestamp = now;
     }
 
-    function balance(bytes32 _info) returns (uint) {
+    function payroll(uint _index) constant returns (address) {
+        return payrolls[_index];
+    }
+
+    function payrollCount() constant returns (uint) {
+        return payrolls.length;
+    }
+
+    function balance(bytes32 _info) constant returns (uint) {
         return balances[_info].total;
     }
 
@@ -76,13 +84,5 @@ contract SpiceHours is SpiceControlled {
         Payroll(msg.sender, payroll);
         payrolls.push(payroll);
         fromTimestamp = now;
-    }
-
-    function payroll(uint _index) returns (address) {
-        return payrolls[_index];
-    }
-
-    function payrollCount() returns (uint) {
-        return payrolls.length;
     }
 }

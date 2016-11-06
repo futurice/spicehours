@@ -99,15 +99,15 @@ contract SpiceMembers {
         SetMemberInfo(msg.sender, _target, info);
     }
 
-    function memberId(address _target) returns (uint) {
+    function memberId(address _target) constant returns (uint) {
         return member[_target].id;
     }
 
-    function memberLevel(address _target) returns (MemberLevel) {
+    function memberLevel(address _target) constant returns (MemberLevel) {
         return member[_target].level;
     }
 
-    function memberInfo(address _target) returns (bytes32) {
+    function memberInfo(address _target) constant returns (bytes32) {
         return member[_target].info;
     }
 }

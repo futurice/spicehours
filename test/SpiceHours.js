@@ -9,7 +9,7 @@ contract("SpiceHours", function(accounts) {
 
     it("should be zero in the beginning", function() {
       var contract = SpiceHours.deployed();
-      return contract.balance.call(accounts[0]).then(function(balance) {
+      return contract.balance(accounts[0]).then(function(balance) {
         assert.equal(balance.valueOf(), 0, "balance should be zero");
       });
     });

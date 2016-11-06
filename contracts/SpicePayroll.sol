@@ -30,15 +30,15 @@ contract SpicePayroll {
         lines[lines.length++] = PayrollLine(_info, _balance);
     }
 
-    function lineInfo(uint _index) returns (bytes32) {
+    function lineInfo(uint _index) constant returns (bytes32) {
         return lines[_index].info;
     }
 
-    function lineBalance(uint _index) returns (uint) {
+    function lineBalance(uint _index) constant returns (uint) {
         return lines[_index].balance;
     }
 
-    function lineCount() returns (uint) {
+    function lineCount() constant returns (uint) {
         return lines.length;
     }
 }
