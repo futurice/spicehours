@@ -57,11 +57,11 @@ contract SpiceMembers {
         if (member[_target].id == 0) {
             memberCount++;
             memberAddress[memberCount] = _target;
-            member[_target] = Member(memberCount, MemberLevel.Member, 0);
-        } else {
-            // Set memberLevel to initial value with basic access
-            member[_target].level = MemberLevel.Member;
+            member[_target] = Member(memberCount, MemberLevel.None, 0);
         }
+
+        // Set memberLevel to initial value with basic access
+        member[_target].level = MemberLevel.Member;
         AddMember(msg.sender, _target);
     }
 
