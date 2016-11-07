@@ -347,6 +347,204 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
+  "2": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "untilTimestamp",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "balanceConverter",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "handler",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_input",
+            "type": "uint256"
+          }
+        ],
+        "name": "processLine",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          }
+        ],
+        "name": "lineBalance",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "fromTimestamp",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          }
+        ],
+        "name": "lineInfo",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "lineCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "name": "_handler",
+            "type": "address"
+          },
+          {
+            "name": "_balanceConverter",
+            "type": "address"
+          },
+          {
+            "name": "_fromTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "_handler",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "input",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "output",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProcessLine",
+        "type": "event"
+      }
+    ],
+    "unlinked_binary": "0x606060405260405160608061037083395060c06040525160805160a051600080546c01000000000000000000000000338102819004600160a060020a031992831617909255600180548684028490049083161790556002805485840293909304929091169190911790556003819055426004555050506102ed806100836000396000f36060604052361561006c5760e060020a60003504630c011388811461007157806398ec014d1461007f578063c80916d414610096578063d6d3d76a146100ad578063d739c6b4146100d7578063df42481414610110578063e6bf5f7a1461011e578063fd3615c914610153575b610002565b346100025761015c60045481565b346100025761016e600254600160a060020a031681565b346100025761016e600154600160a060020a031681565b346100025761018a6004356024356000805433600160a060020a0390811691161461018c57610002565b346100025761015c600435600060056000508281548110156100025790600052602060002090600202016000506001015490505b919050565b346100025761015c60035481565b346100025761015c6004356000600560005082815481101561000257906000526020600020906002020160005054905061010b565b34610002576005545b60408051918252519081900360200190f35b60408051600160a060020a039092168252519081900360200190f35b005b600254604080516000602091820181905282517f82dbcf9400000000000000000000000000000000000000000000000000000000815260048101889052602481018790529251600160a060020a03909416936382dbcf949360448082019493918390030190829087803b156100025760325a03f1156100025750506040805180518183019092528581526020810182905260058054600181018083559395509193509182908280158290116102705760020281600202836000526020600020918201910161027091905b808211156102e95760008082556001820155600201610256565b505050815481101561000257906000526020600020906002020160005081518155602091820151600191820155546040805185815292830184905280518693600160a060020a03909316927f3015ad6ad369d6857b445eb57aa46931b02adfa0e5b2f790f299feb77431efb492908290030190a3505050565b509056",
+    "events": {
+      "0x3015ad6ad369d6857b445eb57aa46931b02adfa0e5b2f790f299feb77431efb4": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "_handler",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "input",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "output",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProcessLine",
+        "type": "event"
+      }
+    },
+    "updated_at": 1478551669429,
+    "links": {}
+  },
   "default": {
     "abi": [
       {
@@ -542,7 +740,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478549818452
+    "updated_at": 1478551432616
   }
 };
 

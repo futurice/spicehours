@@ -347,6 +347,35 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
+  "2": {
+    "abi": [
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_balance",
+            "type": "uint256"
+          }
+        ],
+        "name": "convertBalance",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      }
+    ],
+    "events": {},
+    "updated_at": 1478551669385,
+    "links": {}
+  },
   "default": {
     "abi": [
       {
@@ -373,7 +402,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
       }
     ],
     "events": {},
-    "updated_at": 1478549818432
+    "updated_at": 1478551432605
   }
 };
 
