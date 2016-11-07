@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/jvah/spicehours#readme",
   "dependencies": {
+    "express": "^4.14.0",
+    "web3": "^0.16.0"
+  },
+  "devDependencies": {
     "ethereumjs-testrpc": "3.0.0",
     "truffle": "2.1.1"
   }
