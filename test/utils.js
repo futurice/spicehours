@@ -1,3 +1,12 @@
+function getEventsPromise(events) {
+  return new Promise(function(resolve, reject) {
+    events.get(function(err, val) {
+      if (err) return reject(err);
+      resolve(val);
+    });
+  });
+}
+
 function getTransaction(func) {
   return Promise.resolve().then(func)
     .then(function(txid) {
@@ -26,5 +35,6 @@ function getTransactionError(func) {
     );
 }
 
+exports.getEventsPromise = getEventsPromise;
 exports.getTransaction = getTransaction;
 exports.getTransactionError = getTransactionError;

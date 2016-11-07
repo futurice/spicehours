@@ -1,6 +1,7 @@
 var utils = require('./utils');
 
 var NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+var getEventsPromise = utils.getEventsPromise;
 var getTransaction = utils.getTransaction;
 var getTransactionError = utils.getTransactionError;
 
@@ -65,7 +66,13 @@ contract("E2E", function(accounts) {
       .then(payrollAddress => {
         assert.notEqual(payrollAddress, NULL_ADDRESS, "should not be null");
         var payroll = SpicePayroll.at(payrollAddress);
+
         return Promise.resolve()
+          .then(() => getEventsPromise(payroll.allEvents()))
+          .then(events => {
+            assert.equal(events.length, 3, "incorrect amount of events emitted");
+          });
+          .then(events => console.log(events))
           .then(() => payroll.lineCount())
           .then(lineCount => {
             assert.equal(lineCount.valueOf(), 3, "should have three payroll lines");
