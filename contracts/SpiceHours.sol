@@ -1,7 +1,6 @@
 pragma solidity ^0.4.2;
 
 import "SpiceControlled.sol";
-import "IBalanceConverter.sol";
 import "SpicePayroll.sol";
 
 contract SpiceHours is SpiceControlled {
@@ -69,19 +68,15 @@ contract SpiceHours is SpiceControlled {
     }
 
     function processPayroll(address _balanceConverter) onlyDirector {
-        IBalanceConverter converter = IBalanceConverter(_balanceConverter);
-        SpicePayroll payroll = new SpicePayroll(msg.sender, fromTimestamp);
-        for (uint i = 0; i < infoCount; i++) {
-            uint secs = balances[infos[i]].total;
-            delete balances[infos[i]];
+        SpicePayroll payroll = new SpicePayroll(msg.sender, _balanceConverter, fromTimestamp);
+        Payroll(msg.sender, _balanceConverter, payroll);
 
-            uint balance = converter.convertBalance(infos[i], secs);
-            PayrollLine(msg.sender, infos[i], secs, balance);
-            payroll.addLine(infos[i], balance);
+        for (uint i = 0; i < infoCount; i++) {
+            payroll.processLine(infos[i], balances[infos[i]].total);
+            delete balances[infos[i]];
         }
         delete infos;
 
-        Payroll(msg.sender, converter, payroll);
         payrolls.push(payroll);
         fromTimestamp = now;
     }
