@@ -5,7 +5,8 @@
   "scripts": {
     "build": "truffle build",
     "compile": "truffle compile",
-    "migrate": "truffle migrate",
+    "migrate:morden": "truffle migrate --network morden",
+    "migrate:live": "truffle migrate --network live",
     "testrpc": "testrpc",
     "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL"
   },

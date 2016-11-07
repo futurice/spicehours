@@ -18,7 +18,8 @@ module.exports = {
       network_id: 1
     },
     "morden": {
-      network_id: 2
+      network_id: 2,
+      gas: 3141592
     },
     "development": {
       network_id: "default"
