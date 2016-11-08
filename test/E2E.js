@@ -71,7 +71,7 @@ contract("E2E", function(accounts) {
           .then(() => getEventsPromise(payroll.allEvents()))
           .then(events => {
             assert.equal(events.length, 3, "incorrect amount of events emitted");
-          });
+          })
           .then(events => console.log(events))
           .then(() => payroll.lineCount())
           .then(lineCount => {
