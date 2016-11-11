@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/jvah/spicehours#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "lodash": "^4.16.6",
     "web3": "^0.16.0"
   },
   "devDependencies": {
