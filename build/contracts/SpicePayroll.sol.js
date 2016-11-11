@@ -542,7 +542,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478551669429,
+    "updated_at": 1478895926821,
     "links": {}
   },
   "default": {
@@ -740,7 +740,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478551432616
+    "updated_at": 1478895702689
   }
 };
 
@@ -751,7 +751,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
       return callback();
     }
 
-    this.web3.version.network(function(err, result) {
+    this.web3.version.getNetwork(function(err, result) {
       if (err) return callback(err);
 
       var network_id = result.toString();
