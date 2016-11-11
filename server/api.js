@@ -4,8 +4,8 @@ const contracts = require('./eth').contracts;
 const utils = require('./utils');
 
 const router = express.Router();
-const SpiceMembers = contracts.SpiceMembers.deployed();
-const SpiceHours = contracts.SpiceHours.deployed();
+const SpiceMembers = contracts.SpiceMembers;
+const SpiceHours = contracts.SpiceHours;
 
 const LEVEL_OWNER = 'Owner';
 function levelName(level) {
@@ -26,11 +26,12 @@ function levelName(level) {
 const NULL_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 function getMember(memberAddress) {
+  const members = SpiceMembers.deployed();
   return Promise.all([
-    SpiceMembers.owner(),
-    SpiceMembers.memberId(memberAddress),
-    SpiceMembers.memberLevel(memberAddress),
-    SpiceMembers.memberInfo(memberAddress)
+    members.owner(),
+    members.memberId(memberAddress),
+    members.memberLevel(memberAddress),
+    members.memberInfo(memberAddress)
   ]).then(function(data) {
     var member = {
       id: data[1].toNumber()
@@ -53,11 +54,12 @@ function getMember(memberAddress) {
 router.get('/members/', (req, res, next) => {
   var i;
 
-  SpiceMembers.memberCount()
+  const members = SpiceMembers.deployed();
+  members.memberCount()
     .then(function(count) {
       var promises = [];
       for (i = 1; i<=count.valueOf(); i++) {
-        promises.push(SpiceMembers.memberAddress(i));
+        promises.push(members.memberAddress(i));
       }
       return Promise.all(promises);
     })
@@ -76,6 +78,12 @@ function handleTransaction(method, ...args) {
 
   return _.spread(method.estimateGas)(args)
     .then(usedGas => {
+       // geth uses 50000000 as maximum gas amount
+       if (usedGas.toString() === '50000000')
+         throw new Error('Transaction throwed during gas estimation');
+       return usedGas;
+     })
+    .then(usedGas => {
       const options = _.assoc('gas', usedGas, _.last(args));
       const newArgs = _.concat(_.dropRight(1, args), [options]);
       return _.spread(method)(newArgs);
@@ -90,15 +98,18 @@ router.post('/users/:info/markings', (req, res, next) => {
   const descr = utils.strToBytes32(req.body.description);
   const duration = req.body.duration;
 
-  handleTransaction(SpiceHours.markHours, info, descr, duration)
+  const hours = SpiceHours.deployed();
+  handleTransaction(hours.markHours, info, descr, duration)
     .then(function(txid) {
     res.status(204).send();
   }).catch(next);
 });
 
 router.get('/users/:info/markings', (req, res, next) => {
-  var filter = {_info: utils.encryptInfo(req.params.info)};
-  SpiceHours.MarkHours(filter).get(function(err, events) {
+  const filter = {_info: utils.encryptInfo(req.params.info)};
+
+  const hours = SpiceHours.deployed();
+  hours.MarkHours(filter).get(function(err, events) {
     if (err) return next(err);
     res.json(events);
   });

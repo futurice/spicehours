@@ -21,10 +21,15 @@ function checkNetworks() {
         if (err) return reject(err);
         resolve();
       })
-    ).catch(err => {});
+    ).catch(err => { console.log(err) });
   }
-
   return Promise.all(_.map(checkNetwork, _.values(contracts)));
+}
+
+function checkDeployed() {
+  SpiceMembers.deployed();
+  SpiceHours.deployed();
+  SpiceRates.deployed();
 }
 
 function getAccounts() {
@@ -37,7 +42,7 @@ function getAccounts() {
 }
 
 function setDefaultAccount(accounts) {
-  const account = _.getOr(accounts[0], 'ETH_ACCOUNT', config);
+  const account = _.getOr(accounts[0], 'ACCOUNT', config);
   if (_.isNil(account))
     throw new Error('Account not found');
   if (!_.includes(account, accounts))
@@ -50,6 +55,7 @@ function setDefaultAccount(accounts) {
 function prepare() {
   return Promise.resolve()
     .then(checkNetworks)
+    .then(checkDeployed)
     .then(getAccounts)
     .then(setDefaultAccount);
 }
