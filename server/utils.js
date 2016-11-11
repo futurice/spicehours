@@ -28,10 +28,13 @@ function encryptBytes(info) {
     throw new Error(`Input length is too long: ${info.length}`);
 
   const aesIv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv('aes-128-cbc', aesKey, aesIv);
-  cipher.update(info);
-  const encrypted = Buffer.concat([aesIv, cipher.final()]);
-  return `0x${encrypted.toString('hex')}`;
+  const buf = Buffer.alloc(16);
+  for (let i=0; i<16; i++) buf[i] = aesIv[i] ^ info[i];
+
+  const cipher = crypto.createCipher('aes-128-ecb', aesKey);
+  cipher.update(buf);
+  const encrypted = cipher.update(buf);
+  return `0x${aesIv.toString('hex')}${encrypted.toString('hex')}`;
 }
 
 function decryptBytes(input) {
@@ -41,9 +44,11 @@ function decryptBytes(input) {
   const data = Buffer.from(input.substr(2), 'hex');
   const aesIv = data.slice(0, 16);
   const encrypted = data.slice(16);
-  const cipher = crypto.createDecipheriv('aes-128-cbc', aesKey, aesIv);
+  const cipher = crypto.createDecipher('aes-128-ecb', aesKey);
   cipher.update(encrypted);
-  return cipher.final();
+  const buf = cipher.update(encrypted);
+  for (let i=0; i<16; i++) buf[i] ^= aesIv[i];
+  return buf;
 }
 
 function encryptInfo(info) {
@@ -58,7 +63,7 @@ function encryptInfo(info) {
 
 function decryptInfo(encrypted) {
   const buf = decryptBytes(encrypted);
-  for (let len=buf.length; !buf[len-1] && len>=0; len--);
+  for (var len=buf.length; !buf[len-1] && len>=0; len--);
   return buf.toString('utf8', 0, len);
 }
 

@@ -105,15 +105,20 @@ router.post('/users/:info/markings', (req, res, next) => {
   }).catch(next);
 });
 
-function processEvent(event) {
-  return event.args;
-}
 
 router.get('/users/:info/markings', (req, res, next) => {
+  function processEvent(event) {
+    return _.update('args._info', utils.decryptInfo, event);
+  }
+  function filterEvent(event) {
+    return (event.args._info === req.params.info);
+  }
+
+
   const hours = SpiceHours.deployed();
   hours.MarkHours({}, { fromBlock: 0 }).get(function(err, events) {
     if (err) return next(err);
-    res.json(_.map(processEvent, events));
+    res.json(_.map('args', _.filter(filterEvent, _.map(processEvent, events))));
   });
 });
 
