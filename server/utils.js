@@ -77,6 +77,16 @@ function strToBytes32(str='') {
   return `0x${buf.toString('hex')}`;
 }
 
+function bytes32ToStr(input) {
+  if (!/^0x[0-9a-fA-F]{64}$/.test(input))
+    throw new Error(`Input is in invalid format: ${input}`);
+
+  const buf = Buffer.from(input.substr(2), 'hex');
+  for (var len=buf.length; !buf[len-1] && len>=0; len--);
+  return buf.toString('utf8', 0, len);
+}
+
 exports.encryptInfo = encryptInfo;
 exports.decryptInfo = decryptInfo;
 exports.strToBytes32 = strToBytes32;
+exports.bytes32ToStr = bytes32ToStr;
