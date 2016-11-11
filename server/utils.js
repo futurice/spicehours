@@ -2,14 +2,14 @@ const _ = require('lodash/fp');
 const crypto = require('crypto');
 const config = require('./config');
 
-function keyHash(keystr) {
+function sha128(input) {
   let hash, digest, ret, i;
 
-  if (!_.isString(keystr))
-    throw new Error(`Invalid secret in config: ${keystr}`);
+  if (!Buffer.isBuffer(input))
+    throw new Error(`Invalid input for hash: ${input}`);
 
   hash = crypto.createHash('sha256');
-  hash.update(Buffer.from(keystr));
+  hash.update(input);
   digest = hash.digest();
 
   ret = Buffer.alloc(16);
@@ -19,7 +19,7 @@ function keyHash(keystr) {
   return ret;
 }
 
-const aesKey = keyHash(config.SECRET);
+const aesKey = sha128(Buffer.from(config.SECRET));
 
 function encryptBytes(info) {
   if (!Buffer.isBuffer(info))
@@ -27,7 +27,7 @@ function encryptBytes(info) {
   if (info.length != 16)
     throw new Error(`Input length is too long: ${info.length}`);
 
-  const aesIv = crypto.randomBytes(16);
+  const aesIv = sha128(info);
   const buf = Buffer.alloc(16);
   for (let i=0; i<16; i++) buf[i] = aesIv[i] ^ info[i];
 
