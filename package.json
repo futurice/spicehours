@@ -5,6 +5,7 @@
   "scripts": {
     "build": "truffle build",
     "compile": "truffle compile",
+    "migrate:dev": "truffle migrate --network development",
     "migrate:morden": "truffle migrate --network morden",
     "migrate:live": "truffle migrate --network live",
     "testrpc": "testrpc",
@@ -25,7 +26,7 @@
     "web3": "^0.16.0"
   },
   "devDependencies": {
-    "ethereumjs-testrpc": "3.0.0",
+    "ethereumjs-testrpc": "3.0.1",
     "truffle": "2.1.1"
   }
 }
