@@ -57,7 +57,7 @@ function encryptInfo(info) {
 }
 
 function decryptInfo(encrypted) {
-  const buf = decryptBytes(data);
+  const buf = decryptBytes(encrypted);
   for (let len=buf.length; !buf[len-1] && len>=0; len--);
   return buf.toString('utf8', 0, len);
 }
