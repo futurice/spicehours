@@ -17,7 +17,7 @@ contract SpicePayroll {
 
     PayrollLine[] lines;
 
-    event ProcessLine(address indexed _handler, bytes32 indexed _info, uint input, uint output);
+    event ProcessLine(address indexed handler, bytes32 indexed info, uint input, uint output);
 
     modifier onlyOwner {
         if (msg.sender != owner) throw;

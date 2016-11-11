@@ -529,12 +529,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_owner",
+            "name": "owner",
             "type": "address"
           }
         ],
@@ -546,12 +546,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -563,12 +563,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -580,17 +580,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_level",
+            "name": "level",
             "type": "uint8"
           }
         ],
@@ -602,17 +602,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           }
         ],
@@ -627,12 +627,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_owner",
+            "name": "owner",
             "type": "address"
           }
         ],
@@ -644,12 +644,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -661,12 +661,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -678,17 +678,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_level",
+            "name": "level",
             "type": "uint8"
           }
         ],
@@ -700,17 +700,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           }
         ],
@@ -718,9 +718,9 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478895926816,
+    "updated_at": 1478903458889,
     "links": {},
-    "address": "0x0c33f17f3e7df199e466196ab9935ec2463852e1"
+    "address": "0x263ee8094c0da443e64c16c8a91f51781c69a747"
   },
   "default": {
     "abi": [
@@ -904,12 +904,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_owner",
+            "name": "owner",
             "type": "address"
           }
         ],
@@ -921,12 +921,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -938,12 +938,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -955,17 +955,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_level",
+            "name": "level",
             "type": "uint8"
           }
         ],
@@ -977,17 +977,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           }
         ],
@@ -1002,12 +1002,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_owner",
+            "name": "owner",
             "type": "address"
           }
         ],
@@ -1019,12 +1019,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -1036,12 +1036,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           }
         ],
@@ -1053,17 +1053,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_level",
+            "name": "level",
             "type": "uint8"
           }
         ],
@@ -1075,17 +1075,17 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_sender",
+            "name": "sender",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_member",
+            "name": "member",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           }
         ],
@@ -1093,7 +1093,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478895702689
+    "updated_at": 1478903200231
   }
 };
 

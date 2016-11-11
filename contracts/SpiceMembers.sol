@@ -14,11 +14,11 @@ contract SpiceMembers {
     mapping (uint => address) public memberAddress;
     uint public memberCount;
 
-    event TransferOwnership(address indexed _sender, address indexed _owner);
-    event AddMember(address indexed _sender, address indexed _member);
-    event RemoveMember(address indexed _sender, address indexed _member);
-    event SetMemberLevel(address indexed _sender, address indexed _member, MemberLevel _level);
-    event SetMemberInfo(address indexed _sender, address indexed _member, bytes32 _info);
+    event TransferOwnership(address indexed sender, address indexed owner);
+    event AddMember(address indexed sender, address indexed member);
+    event RemoveMember(address indexed sender, address indexed member);
+    event SetMemberLevel(address indexed sender, address indexed member, MemberLevel level);
+    event SetMemberInfo(address indexed sender, address indexed member, bytes32 info);
 
     function SpiceMembers() {
         owner = msg.sender;

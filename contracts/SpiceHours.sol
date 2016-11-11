@@ -16,9 +16,9 @@ contract SpiceHours is SpiceControlled {
     bytes32[] infos;
     uint infoCount;
 
-    event MarkHours(address indexed _sender, bytes32 indexed _info, bytes32 indexed _description, int _secs);
-    event FixHours(address indexed _sender, bytes32 indexed _info, bytes32 indexed _description, int _secs);
-    event Payroll(address indexed _sender, address indexed _balanceConverter, address _payroll);
+    event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
+    event FixHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
+    event Payroll(address indexed sender, address indexed converter, address payroll);
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         fromTimestamp = now;
@@ -36,10 +36,10 @@ contract SpiceHours is SpiceControlled {
         return balances[_info].total;
     }
 
-    function adjustHours(bytes32 _info, int _secs) private {
+    function adjustHours(bytes32 _info, int _duration) private {
         if (_info == 0) throw;
-        if (_secs == 0) throw;
-        if (_secs < 0 && balances[_info].total < uint(-_secs)) throw;
+        if (_duration == 0) throw;
+        if (_duration < 0 && balances[_info].total < uint(-_duration)) throw;
 
         if (!balances[_info].available) {
             balances[_info].available = true;
@@ -47,23 +47,23 @@ contract SpiceHours is SpiceControlled {
             infoCount++;
         }
 
-        if (_secs < 0) {
-            balances[_info].total -= uint(-_secs);
+        if (_duration < 0) {
+            balances[_info].total -= uint(-_duration);
         } else {
-            balances[_info].total += uint(_secs);
+            balances[_info].total += uint(_duration);
         }
     }
 
-    function markHours(bytes32 _info, bytes32 _description, int _secs) onlyMember {
+    function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
         if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
 
-        adjustHours(_info, _secs);
-        MarkHours(msg.sender, _info, _description, _secs);
+        adjustHours(_info, _duration);
+        MarkHours(msg.sender, _info, _description, _duration);
     }
 
-    function fixHours(bytes32 _info, bytes32 _description, int _secs) onlyDirector {
-        adjustHours(_info, _secs);
-        FixHours(msg.sender, _info, _description, _secs);
+    function fixHours(bytes32 _info, bytes32 _description, int _duration) onlyDirector {
+        adjustHours(_info, _duration);
+        FixHours(msg.sender, _info, _description, _duration);
     }
 
     function processPayroll(address _balanceConverter) onlyDirector {

@@ -489,12 +489,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_handler",
+            "name": "handler",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           },
           {
@@ -519,12 +519,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_handler",
+            "name": "handler",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           },
           {
@@ -542,7 +542,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478895926821,
+    "updated_at": 1478903458895,
     "links": {}
   },
   "default": {
@@ -687,12 +687,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_handler",
+            "name": "handler",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           },
           {
@@ -717,12 +717,12 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "inputs": [
           {
             "indexed": true,
-            "name": "_handler",
+            "name": "handler",
             "type": "address"
           },
           {
             "indexed": true,
-            "name": "_info",
+            "name": "info",
             "type": "bytes32"
           },
           {
@@ -740,7 +740,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         "type": "event"
       }
     },
-    "updated_at": 1478895702689
+    "updated_at": 1478903200232
   }
 };
 

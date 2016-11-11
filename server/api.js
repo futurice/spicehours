@@ -108,11 +108,11 @@ router.post('/users/:info/markings', (req, res, next) => {
 
 router.get('/users/:info/markings', (req, res, next) => {
   function processEvent(event) {
-    return _.update('args._info', utils.decryptInfo,
-      _.update('args._description', utils.bytes32ToStr, event));
+    return _.update('args.info', utils.decryptInfo,
+      _.update('args.description', utils.bytes32ToStr, event));
   }
   function filterEvent(event) {
-    return (event.args._info === req.params.info);
+    return (event.args.info === req.params.info);
   }
 
   const hours = SpiceHours.deployed();
