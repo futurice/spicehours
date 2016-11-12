@@ -11,8 +11,9 @@ app.use('/api/', api);
 
 eth.prepare()
   .then(() => {
-    app.listen(3000);
-    console.log('Listening to ' + 3000);
+    const port = process.env.PORT || 3000;
+    console.log(`Listening to port ${port}`);
+    app.listen(port);
   })
   .catch(err => {
     console.log(err);

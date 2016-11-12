@@ -78,6 +78,7 @@ function strToBytes32(str='') {
 }
 
 function bytes32ToStr(input) {
+  if (_.isNil(input)) return;
   if (!/^0x[0-9a-fA-F]{64}$/.test(input))
     throw new Error(`Input is in invalid format: ${input}`);
 

@@ -90,7 +90,16 @@ function handleTransaction(method, ...args) {
     });
 }
 
-router.post('/users/:info/markings', (req, res, next) => {
+function getEvents(event, ...args) {
+  return new Promise((resolve, reject) => {
+    _.spread(event)(args).get((err, events) => {
+      if (err) return reject(err);
+      resolve(events);
+    });
+  });
+}
+
+router.post('/hours/:info/markings', (req, res, next) => {
   if (!_.isNumber(req.body.duration))
     return res.status(400).json({ error: 'Bad Request' });
 
@@ -101,23 +110,28 @@ router.post('/users/:info/markings', (req, res, next) => {
   const hours = SpiceHours.deployed();
   handleTransaction(hours.markHours, info, descr, duration)
     .then(function(txid) {
-    res.status(204).send();
-  }).catch(next);
+      res.status(204).send();
+    }).catch(next);
 });
 
 
-router.get('/users/:info/markings', (req, res, next) => {
+router.get('/hours/:info/events', (req, res, next) => {
   const filter = { info: utils.encryptInfo(req.params.info) };
-  function processEvent(event) {
-    return _.update('args.info', utils.decryptInfo,
-      _.update('args.description', utils.bytes32ToStr, event));
-  }
+  const processEvent = _.flow(
+      _.update('args.info', utils.decryptInfo),
+      _.update('args.description', utils.bytes32ToStr)
+  );
+  const fromBlock = 0;
 
   const hours = SpiceHours.deployed();
-  hours.MarkHours(filter, { fromBlock: 0 }).get(function(err, events) {
-    if (err) return next(err);
-    res.json(_.map('args', _.map(processEvent, events)));
-  });
+  Promise.all([
+    getEvents(hours.MarkHours, filter, { fromBlock }),
+    getEvents(hours.FixHours, filter, { fromBlock }),
+    getEvents(hours.ProcessHours, filter, { fromBlock })
+  ]).then(([markEvents, fixEvents, processEvents]) => {
+    const events = _.sortBy('blockNumber', _.concat(_.concat(markEvents, fixEvents), processEvents));
+    res.json(_.map(processEvent, events));
+  }).catch(err => next(err));
 });
 
 module.exports = router;
