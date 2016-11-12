@@ -2,24 +2,28 @@ const _ = require('lodash/fp');
 const crypto = require('crypto');
 const config = require('./config');
 
-function sha128(input) {
-  let hash, digest, ret, i;
-
+function sha256(input) {
   if (!Buffer.isBuffer(input))
     throw new Error(`Invalid input for hash: ${input}`);
 
-  hash = crypto.createHash('sha256');
+  const hash = crypto.createHash('sha256');
   hash.update(input);
-  digest = hash.digest();
 
-  ret = Buffer.alloc(16);
-  for (i=0; i<16; i++) {
+  return hash.digest();
+}
+
+function sha128(input) {
+  const digest = sha256(input);
+  const ret = Buffer.alloc(16);
+
+  for (let i=0; i<16; i++) {
     ret[i] = digest[i] ^ digest[16+i];
   }
+
   return ret;
 }
 
-const aesKey = sha128(Buffer.from(config.SECRET));
+const aesKey = sha256(Buffer.from(config.SECRET));
 
 function encryptBytes(info) {
   if (!Buffer.isBuffer(info))
@@ -31,7 +35,7 @@ function encryptBytes(info) {
   const buf = Buffer.alloc(16);
   for (let i=0; i<16; i++) buf[i] = aesIv[i] ^ info[i];
 
-  const cipher = crypto.createCipher('aes-128-ecb', aesKey);
+  const cipher = crypto.createCipher('aes-256-ecb', aesKey);
   cipher.update(buf);
   const encrypted = cipher.update(buf);
   return `0x${aesIv.toString('hex')}${encrypted.toString('hex')}`;
@@ -44,7 +48,7 @@ function decryptBytes(input) {
   const data = Buffer.from(input.substr(2), 'hex');
   const aesIv = data.slice(0, 16);
   const encrypted = data.slice(16);
-  const cipher = crypto.createDecipher('aes-128-ecb', aesKey);
+  const cipher = crypto.createDecipher('aes-256-ecb', aesKey);
   cipher.update(encrypted);
   const buf = cipher.update(encrypted);
   for (let i=0; i<16; i++) buf[i] ^= aesIv[i];
