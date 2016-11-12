@@ -21,7 +21,7 @@ function checkNetworks() {
         if (err) return reject(err);
         resolve();
       })
-    ).catch(err => { console.log(err) });
+    ).catch(err => { console.log(err.message) });
   }
   return Promise.all(_.map(checkNetwork, _.values(contracts)));
 }

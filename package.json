@@ -5,11 +5,15 @@
   "scripts": {
     "build": "truffle build",
     "compile": "truffle compile",
-    "migrate:dev": "truffle migrate --network development",
+    "fixtures:members": "truffle exec fixtures/members.js",
+    "fixtures:hours": "truffle exec fixtures/hours.js",
+    "fixtures": "npm run fixtures:members && npm run fixtures:hours",
+    "migrate:dev": "truffle migrate --network development && npm run fixtures",
     "migrate:testnet": "truffle migrate --network morden",
     "migrate:live": "truffle migrate --network live",
     "testrpc": "testrpc",
-    "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL"
+    "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL",
+    "start": "testrpc & (npm run migrate:dev && nodemon server) ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi"
   },
   "repository": {
     "type": "git",
@@ -22,13 +26,14 @@
   },
   "homepage": "https://github.com/jvah/spicehours#readme",
   "dependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "lodash": "^4.16.6",
-    "web3": "^0.16.0"
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "lodash": "4.16.6",
+    "web3": "0.16.0"
   },
   "devDependencies": {
     "ethereumjs-testrpc": "3.0.1",
+    "nodemon": "1.11.0",
     "truffle": "2.1.1"
   }
 }
