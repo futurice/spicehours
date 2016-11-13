@@ -231,13 +231,13 @@ var SolidityEvent = require("web3/lib/web3/event.js");
 
   Contract.new = function() {
     if (this.currentProvider == null) {
-      throw new Error("IBalanceConverter error: Please call setProvider() first before calling new().");
+      throw new Error("IPayrollCalculator error: Please call setProvider() first before calling new().");
     }
 
     var args = Array.prototype.slice.call(arguments);
 
     if (!this.unlinked_binary) {
-      throw new Error("IBalanceConverter error: contract binary not set. Can't deploy new instance.");
+      throw new Error("IPayrollCalculator error: contract binary not set. Can't deploy new instance.");
     }
 
     var regex = /__[^_]+_+/g;
@@ -256,7 +256,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
         return name != arr[index + 1];
       }).join(", ");
 
-      throw new Error("IBalanceConverter contains unresolved libraries. You must deploy and link the following libraries before you can deploy a new version of IBalanceConverter: " + unlinked_libraries);
+      throw new Error("IPayrollCalculator contains unresolved libraries. You must deploy and link the following libraries before you can deploy a new version of IPayrollCalculator: " + unlinked_libraries);
     }
 
     var self = this;
@@ -297,7 +297,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
 
   Contract.at = function(address) {
     if (address == null || typeof address != "string" || address.length != 42) {
-      throw new Error("Invalid address passed to IBalanceConverter.at(): " + address);
+      throw new Error("Invalid address passed to IPayrollCalculator.at(): " + address);
     }
 
     var contract_class = this.web3.eth.contract(this.abi);
@@ -308,7 +308,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
 
   Contract.deployed = function() {
     if (!this.address) {
-      throw new Error("Cannot find deployed address: IBalanceConverter not deployed or address not set.");
+      throw new Error("Cannot find deployed address: IPayrollCalculator not deployed or address not set.");
     }
 
     return this.at(this.address);
@@ -347,35 +347,6 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
-  "2": {
-    "abi": [
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "_info",
-            "type": "bytes32"
-          },
-          {
-            "name": "_balance",
-            "type": "uint256"
-          }
-        ],
-        "name": "convertBalance",
-        "outputs": [
-          {
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "type": "function"
-      }
-    ],
-    "events": {},
-    "updated_at": 1478903458869,
-    "links": {}
-  },
   "default": {
     "abi": [
       {
@@ -386,11 +357,33 @@ var SolidityEvent = require("web3/lib/web3/event.js");
             "type": "bytes32"
           },
           {
-            "name": "_balance",
+            "name": "_duration",
             "type": "uint256"
           }
         ],
-        "name": "convertBalance",
+        "name": "calculatePaidDuration",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_duration",
+            "type": "uint256"
+          }
+        ],
+        "name": "calculatePayout",
         "outputs": [
           {
             "name": "",
@@ -402,7 +395,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
       }
     ],
     "events": {},
-    "updated_at": 1478903200224
+    "updated_at": 1479069956999
   }
 };
 
@@ -487,7 +480,7 @@ var SolidityEvent = require("web3/lib/web3/event.js");
     Contract.links[name] = address;
   };
 
-  Contract.contract_name   = Contract.prototype.contract_name   = "IBalanceConverter";
+  Contract.contract_name   = Contract.prototype.contract_name   = "IPayrollCalculator";
   Contract.generated_with  = Contract.prototype.generated_with  = "3.2.0";
 
   // Allow people to opt-in to breaking changes now.
@@ -527,6 +520,6 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   } else {
     // There will only be one version of this contract in the browser,
     // and we can use that.
-    window.IBalanceConverter = Contract;
+    window.IPayrollCalculator = Contract;
   }
 })();
