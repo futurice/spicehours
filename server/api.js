@@ -115,7 +115,7 @@ router.post('/hours/:info/markings', (req, res, next) => {
     }).catch(next);
 });
 
-router.get('/hours/', (req, res, next) => {
+router.get('/hours/balances', (req, res, next) => {
   const hours = SpiceHours.deployed();
   hours.infoCount()
     .then(count =>
@@ -129,10 +129,24 @@ router.get('/hours/', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/hours/events', (req, res, next) => {
+  const fromBlock = 0;
+  const processEvent = _.flow(
+      _.update('args.info', info => info && utils.decryptInfo(info)),
+      _.update('args.description', utils.bytes32ToStr)
+  );
+
+  const hours = SpiceHours.deployed();
+  getEvents(hours.allEvents, { fromBlock })
+    .then(events =>
+      res.json(_.map(processEvent, _.sortBy('blockNumber', events)))
+    ).catch(next);
+});
+
 router.get('/hours/:info/events', (req, res, next) => {
   const filter = { info: utils.encryptInfo(req.params.info) };
   const processEvent = _.flow(
-      _.update('args.info', utils.decryptInfo),
+      _.update('args.info', info => info && utils.decryptInfo(info)),
       _.update('args.description', utils.bytes32ToStr)
   );
   const fromBlock = 0;
