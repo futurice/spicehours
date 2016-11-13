@@ -10,11 +10,10 @@ contract SpiceHours is SpiceControlled {
     }
 
     uint public fromTimestamp;
-    address[] payrolls;
+    address[] public payrolls;
 
-    mapping (bytes32 => MemberBalance) balances;
-    bytes32[] infos;
-    uint infoCount;
+    mapping (bytes32 => MemberBalance) public balances;
+    bytes32[] public infos;
 
     event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
     event FixHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
@@ -23,18 +22,6 @@ contract SpiceHours is SpiceControlled {
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         fromTimestamp = now;
-    }
-
-    function payroll(uint _index) constant returns (address) {
-        return payrolls[_index];
-    }
-
-    function payrollCount() constant returns (uint) {
-        return payrolls.length;
-    }
-
-    function balance(bytes32 _info) constant returns (uint) {
-        return balances[_info].duration;
     }
 
     function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
@@ -47,7 +34,6 @@ contract SpiceHours is SpiceControlled {
         if (!balances[_info].available) {
             balances[_info].available = true;
             infos.push(_info);
-            infoCount++;
         }
 
         if (_duration < 0) {
@@ -62,7 +48,7 @@ contract SpiceHours is SpiceControlled {
         SpicePayroll payroll = new SpicePayroll(msg.sender, _balanceConverter, fromTimestamp);
         ProcessPayroll(msg.sender, payroll);
 
-        for (uint i = 0; i < infoCount; i++) {
+        for (uint i = 0; i < infos.length; i++) {
             payroll.processLine(infos[i], balances[infos[i]].duration);
             ProcessHours(msg.sender, infos[i], balances[infos[i]].duration);
             delete balances[infos[i]];
@@ -71,5 +57,17 @@ contract SpiceHours is SpiceControlled {
 
         payrolls.push(payroll);
         fromTimestamp = now;
+    }
+
+    function balance(bytes32 _info) constant returns (uint) {
+        return balances[_info].duration;
+    }
+
+    function payrollCount() constant returns (uint) {
+        return payrolls.length;
+    }
+
+    function infoCount() constant returns (uint) {
+        return infos.length;
     }
 }

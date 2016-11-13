@@ -15,16 +15,16 @@ contract("E2E", function(accounts) {
   var outsiderInfo1 = web3.fromUtf8("barbaz");
   var outsiderInfo2 = web3.fromUtf8("bazquux");
 
-  it("should be able to handle a complete payroll", function() {
+  it("should be able to handle a complete payroll", function(done) {
     var members = SpiceMembers.deployed();
     var hours = SpiceHours.deployed();
 
-    return Promise.resolve()
+    Promise.resolve()
       .then(() => getTransaction(() => members.addMember(director, {from: owner})))
       .then(() => getTransaction(() => members.setMemberLevel(director, 3, {from: owner})))
       .then(() => getTransaction(() => members.addMember(manager), {from: director}))
-      .then(() => getTransaction(() => members.setMemberLevel(manager, 2), {from: director}))
-      .then(() => getTransaction(() => members.addMember(member), {from: manager}))
+      .then(() => getTransaction(() => members.setMemberLevel(manager, 2, {from: director})))
+      .then(() => getTransaction(() => members.addMember(member, {from: manager})))
       .then(() => getTransaction(() => members.setMemberInfo(member, memberInfo, {from: manager})))
       .then(() => getTransaction(() => hours.markHours(memberInfo, 0, 3600, {from: member})))
       .then(() => getTransaction(() => hours.markHours(memberInfo, 0, 1800, {from: manager})))
@@ -40,10 +40,12 @@ contract("E2E", function(accounts) {
         assert.equal(balances[0].toString(), "5400", "member balance incorrect");
         assert.equal(balances[1].toString(), "144000", "outsider1 balance incorrect");
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
-      });
+        done();
+      })
+      .catch(done);
   });
 
-  it("should have calculated the hours correctly", function() {
+  it("should have calculated the hours correctly", function(done) {
     var hours = SpiceHours.deployed();
     var rates = SpiceRates.deployed();
 
@@ -54,14 +56,14 @@ contract("E2E", function(accounts) {
       return "0";
     }
 
-    return Promise.resolve()
+    Promise.resolve()
       .then(() => getTransaction(() => rates.setUnpaidPercentage(memberInfo, 20)))
       .then(() => getTransaction(() => hours.processPayroll(rates.address)))
       .then(() => hours.payrollCount())
       .then(payrollCount => {
         assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
       })
-      .then(() => hours.payroll(0))
+      .then(() => hours.payrolls(0))
       .then(payrollAddress => {
         assert.notEqual(payrollAddress, NULL_ADDRESS, "should not be null");
         var payroll = SpicePayroll.at(payrollAddress);
@@ -97,6 +99,8 @@ contract("E2E", function(accounts) {
           .then(line => {
             assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
           });
-      });
+      })
+      .then(() => done())
+      .catch(done);
   });
 });
