@@ -12,7 +12,7 @@ contract SpiceHours is SpiceControlled {
     uint public fromTimestamp;
     address[] public payrolls;
 
-    mapping (bytes32 => MemberBalance) public balances;
+    mapping (bytes32 => MemberBalance) balances;
     bytes32[] public infos;
 
     event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);

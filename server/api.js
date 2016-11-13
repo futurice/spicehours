@@ -59,7 +59,7 @@ router.get('/members/', (req, res, next) => {
   members.memberCount()
     .then(function(count) {
       var promises = [];
-      for (i = 1; i<=count.valueOf(); i++) {
+      for (i = 1; i<=count.toNumber(); i++) {
         promises.push(members.memberAddress(i));
       }
       return Promise.all(promises);
@@ -115,6 +115,19 @@ router.post('/hours/:info/markings', (req, res, next) => {
     }).catch(next);
 });
 
+router.get('/hours/', (req, res, next) => {
+  const hours = SpiceHours.deployed();
+  hours.infoCount()
+    .then(count =>
+      Promise.all(_.map(idx => hours.infos(idx), _.range(0, count.toNumber())))
+    )
+    .then(infos =>
+      Promise.all(_.map(info => hours.balance(info), infos))
+        .then(_.zipObject(_.map(utils.decryptInfo, infos)))
+    )
+    .then(balances => res.json(balances))
+    .catch(next);
+});
 
 router.get('/hours/:info/events', (req, res, next) => {
   const filter = { info: utils.encryptInfo(req.params.info) };
