@@ -347,6 +347,57 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
+  "2": {
+    "abi": [
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_duration",
+            "type": "uint256"
+          }
+        ],
+        "name": "calculatePaidDuration",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_duration",
+            "type": "uint256"
+          }
+        ],
+        "name": "calculatePayout",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      }
+    ],
+    "events": {},
+    "updated_at": 1479070784477,
+    "links": {}
+  },
   "default": {
     "abi": [
       {

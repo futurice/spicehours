@@ -347,6 +347,381 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
+  "2": {
+    "abi": [
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "removeMember",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "memberCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "memberLevel",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "memberId",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          },
+          {
+            "name": "info",
+            "type": "bytes32"
+          }
+        ],
+        "name": "setMemberInfo",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          },
+          {
+            "name": "level",
+            "type": "uint8"
+          }
+        ],
+        "name": "setMemberLevel",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "memberInfo",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "memberAddress",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "addMember",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_target",
+            "type": "address"
+          }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "name": "TransferOwnership",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "AddMember",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "RemoveMember",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "level",
+            "type": "uint8"
+          }
+        ],
+        "name": "SetMemberLevel",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "info",
+            "type": "bytes32"
+          }
+        ],
+        "name": "SetMemberInfo",
+        "type": "event"
+      }
+    ],
+    "unlinked_binary": "0x600180546c01000000000000000000000000338102819004600160a060020a03199283161780845560038490557fe90b7bceb6e7df5418fb78d8ee546e97c83a08bbccc01a0644d599ccd2a7c2e08054600160a060020a0390921680840293909304919093161790915560c0604090815260608390526000608081905260a081905291825260208290528120828155918201805460ff1916905560029091018190556106939081906100b090396000f36060604052361561008d5760e060020a60003504630b1ca49a811461009257806311aee380146100c95780631ed454a5146100d757806339106821146100e75780633a6ab5691461011057806350405fdf146101295780638da5cb5b1461014e578063a313c37114610165578063ac5ad18814610191578063ca6d56dc146101b7578063f2fde38b146101e7575b610002565b346100025761020d600435600061023d825b600160a060020a03811660009081526020819052604090206001015460ff165b919050565b346100025761020f60035481565b346100025761020f6004356100a4565b346100025761020f600435600160a060020a0381166000908152602081905260409020546100c4565b346100025761020d60043560243560006102d3836100a4565b346100025761020d6004356024358015806101445750600381115b1561039057610002565b3461000257610221600154600160a060020a031681565b346100025761020f600435600160a060020a0381166000908152602081905260409020600201546100c4565b3461000257610221600435600260205260009081526040902054600160a060020a031681565b346100025761020d60043560015433600160a060020a0390811691161480159061047c5750600261047a336100a4565b346100025761020d60043560015433600160a060020a0390811691161461059757610002565b005b60408051918252519081900360200190f35b60408051600160a060020a039092168252519081900360200190f35b141561024857610002565b60015433600160a060020a0390811691161480159061026e5750610278816100a4565b11155b1561028157610002565b61026b336100a4565b600160a060020a03808216600081815260208190526040808220600101805460ff191690555191923316917fb4f9529cf2105e0b4758a4764745afc6627875ddf1a09fa46f6e790caacff2b89190a350565b14156102de57610002565b60015433600160a060020a0390811691161480159061030f575081600160a060020a031633600160a060020a031614155b8015610322575061032c826100a4565b11155b1561033557610002565b61031f336100a4565b600160a060020a03808316600081815260208181526040918290206002018590558151858152915192933316927fbbf7802657744d5fc61eac863a0b33340f93fcd30c817a95481327718b077e1a9281900390910190a35050565b600061039b836100a4565b14156103a657610002565b60015433600160a060020a039081169116148015906103cd5750806103ca336100a4565b11155b156103d757610002565b60015433600160a060020a039081169116148015906103fd5750610407826100a4565b11155b1561041057610002565b6103fa336100a4565b600160a060020a0382811660008181526020818152604091829020600101805460ff191660f860020a878102041790558151858152915192933316927f3d20e3d7ad23e513cf9e60beca387ead0026a83dc692a8d81fb81288aa67469a9281900390910190a35050565b105b1561048657610002565b6000610491826100a4565b1461049b57610002565b600160a060020a03811660009081526020819052604090205415156105405760038054600190810180835560009081526002602081815260408084208054600160a060020a031916606060020a89810204179055805160608101825295548652858201848152868201858152600160a060020a0389168652928590529320945185559151928401805460ff191660f860020a9485029490940493909317909255519101555b600160a060020a038082166000818152602081905260408082206001908101805460ff191690911790555191923316917f7ef619bd6be65b04d1a09552b76aafa94f08d0b2f42d743ab897b2c02997d1199190a350565b600160a060020a038116600090815260208190526040902054151561063c5760038054600190810180835560009081526002602081815260408084208054600160a060020a031916606060020a89810204179055805160608101825295548652858201848152868201858152600160a060020a0389168652928590529320945185559151928401805460ff191660f860020a9485029490940493909317909255519101555b60018054600160a060020a031916606060020a838102041790819055604051600160a060020a03918216913316907f5c486528ec3e3f0ea91181cff8116f02bfa350e03b8b6f12e00765adbb5af85c90600090a35056",
+    "events": {
+      "0x5c486528ec3e3f0ea91181cff8116f02bfa350e03b8b6f12e00765adbb5af85c": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "name": "TransferOwnership",
+        "type": "event"
+      },
+      "0x7ef619bd6be65b04d1a09552b76aafa94f08d0b2f42d743ab897b2c02997d119": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "AddMember",
+        "type": "event"
+      },
+      "0xb4f9529cf2105e0b4758a4764745afc6627875ddf1a09fa46f6e790caacff2b8": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "RemoveMember",
+        "type": "event"
+      },
+      "0x3d20e3d7ad23e513cf9e60beca387ead0026a83dc692a8d81fb81288aa67469a": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "level",
+            "type": "uint8"
+          }
+        ],
+        "name": "SetMemberLevel",
+        "type": "event"
+      },
+      "0xbbf7802657744d5fc61eac863a0b33340f93fcd30c817a95481327718b077e1a": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "info",
+            "type": "bytes32"
+          }
+        ],
+        "name": "SetMemberInfo",
+        "type": "event"
+      }
+    },
+    "updated_at": 1479070784502,
+    "links": {},
+    "address": "0x7a2389c319ea3b788105e8c4dd9594a618945158"
+  },
   "default": {
     "abi": [
       {

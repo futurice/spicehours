@@ -347,6 +347,367 @@ var SolidityEvent = require("web3/lib/web3/event.js");
   };
 
   Contract.all_networks = {
+  "2": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          }
+        ],
+        "name": "linePayout",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "untilTimestamp",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          }
+        ],
+        "name": "lineDuration",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          },
+          {
+            "name": "_duration",
+            "type": "uint256"
+          }
+        ],
+        "name": "modifyLine",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "unlock",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "handler",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "calculator",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_info",
+            "type": "bytes32"
+          },
+          {
+            "name": "_input",
+            "type": "uint256"
+          }
+        ],
+        "name": "processLine",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "fromTimestamp",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "uint256"
+          }
+        ],
+        "name": "lineInfo",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "lock",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "lineCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "name": "_members",
+            "type": "address"
+          },
+          {
+            "name": "_handler",
+            "type": "address"
+          },
+          {
+            "name": "_calculator",
+            "type": "address"
+          },
+          {
+            "name": "_fromTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "handler",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "calculator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "from",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "until",
+            "type": "uint256"
+          }
+        ],
+        "name": "NewPayroll",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "input",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "payout",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProcessLine",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "payout",
+            "type": "uint256"
+          }
+        ],
+        "name": "ModifyLine",
+        "type": "event"
+      }
+    ],
+    "unlinked_binary": "0x60606040526040516080806107c6833960e060408181529251915160a05160c05160008054600160a060020a03199081166c01000000000000000000000000808902819004919091179092556001805482163384028490041790556002805482168387028490041790819055600380549092168386029390930492909217908190556004839055426005819055838752610100529596939592949193600160a060020a0393841693909116917f0469cd0a6e4ef30656ef148cb0392b9b1412d9cc5c780ed0fa40416ade3f69f69190a3505050506106e5806100e16000396000f3606060405236156100985760e060020a6000350463042f4d54811461009d5780630c011388146100d65780633bd05562146100e4578063a64cf7f71461011c578063a69df4b5146101c0578063c80916d414610253578063ce3e39c01461026a578063d6d3d76a14610281578063df424814146102af578063e6bf5f7a146102bd578063f83d08ba146102f2578063fd3615c914610303575b610002565b346100025761030c600435600060066000508281548110156100025790600052602060002090600302016000506002015490505b919050565b346100025761030c60055481565b346100025761030c600435600060066000508281548110156100025790600052602060002090600302016000506001015490506100d1565b346100025761031e6004356024356000600061033c335b60006003600060009054906101000a9004600160a060020a0316600160a060020a0316631ed454a5846000604051602001526040518260e060020a0281526004018082600160a060020a03168152602001915050602060405180830381600087803b156100025760325a03f1156100025750506040515191909110159050806106de57506106de826101cd565b346100025761031e610489335b6000805460408051602090810184905281517f8da5cb5b0000000000000000000000000000000000000000000000000000000081529151600160a060020a0390931692638da5cb5b92600480820193929182900301818787803b156100025760325a03f11561000257505060405151600160a060020a0384811691161491506100d19050565b3461000257610320600254600160a060020a031681565b3461000257610320600354600160a060020a031681565b346100025761031e600435602435600154600090819033600160a060020a039081169116146104b457610002565b346100025761030c60045481565b346100025761030c600435600060066000508281548110156100025790600052602060002090600302016000505490506100d1565b346100025761031e6106ad33610133565b34610002576006545b60408051918252519081900360200190f35b005b60408051600160a060020a039092168252519081900360200190f35b151561034757610002565b60005460a060020a900460ff161561035e57610002565b600680548590811015610002579060005260206000209060030201600050546003546040805160006020918201819052825160e060020a63e2b863cf02815260048101869052602481018990529251949650600160a060020a039093169363e2b863cf936044808501948390030190829087803b156100025760325a03f1156100025750506040805180516060820183528582526020820187905291810182905260068054929450909250908690811015610002576000918252602091829020835160039092020190815582820151600182015560409283015160029091015581518581529081018390528151849233600160a060020a0316927ff81f79243d2fbdb26e8692f3b6f04bce034bd9bef7240b07767315f38015db95929081900390910190a350505050565b151561049457610002565b6000805474ff000000000000000000000000000000000000000019169055565b60005460a060020a900460ff16156104cb57610002565b600354604080516000602091820181905282517f5dada54f00000000000000000000000000000000000000000000000000000000815260048101899052602481018890529251600160a060020a0390941693635dada54f9360448082019493918390030190829087803b156100025760325a03f11561000257505060408051805160035460006020938401819052845160e060020a63e2b863cf028152600481018b9052602481018490529451929750600160a060020a03909116945063e2b863cf936044808201949392918390030190829087803b156100025760325a03f1156100025750506040805180516060820183528782526020820186905291810182905260068054600181018083559395509193509182908280158290116106285760030281600302836000526020600020918201910161062891905b808211156106a9576000808255600182018190556002820155600301610607565b50505081548110156100025790600052602060002090600302016000508151815560208083015160018301556040928301516002909201919091558151858152908101849052808201839052905185917f1d31ce72899acd50b693608fbeffecac0b32b54fecad4d3e44cab63854fa52aa919081900360600190a250505050565b5090565b15156106b857610002565b6000805474ff0000000000000000000000000000000000000000191660a060020a179055565b90506100d156",
+    "events": {
+      "0x0469cd0a6e4ef30656ef148cb0392b9b1412d9cc5c780ed0fa40416ade3f69f6": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "handler",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "calculator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "from",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "until",
+            "type": "uint256"
+          }
+        ],
+        "name": "NewPayroll",
+        "type": "event"
+      },
+      "0x1d31ce72899acd50b693608fbeffecac0b32b54fecad4d3e44cab63854fa52aa": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "input",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "payout",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProcessLine",
+        "type": "event"
+      },
+      "0xf81f79243d2fbdb26e8692f3b6f04bce034bd9bef7240b07767315f38015db95": {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "name": "info",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "payout",
+            "type": "uint256"
+          }
+        ],
+        "name": "ModifyLine",
+        "type": "event"
+      }
+    },
+    "updated_at": 1479070784496,
+    "links": {}
+  },
   "default": {
     "abi": [
       {
