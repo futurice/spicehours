@@ -49,7 +49,7 @@ contract("E2E", function(accounts) {
     var hours = SpiceHours.deployed();
     var rates = SpiceRates.deployed();
 
-    function balanceForInfo(info) {
+    function payoutForInfo(info) {
       if (info.substr(0, memberInfo.length) === memberInfo) return "18000000"; // 1.5h * 0.8 * 15000000
       if (info.substr(0, outsiderInfo1.length) === outsiderInfo1) return "450000000"; // 30h * 15000000
       if (info.substr(0, outsiderInfo2.length) === outsiderInfo2) return "20833333"; // 5000/3600h * 15000000
@@ -71,7 +71,7 @@ contract("E2E", function(accounts) {
         return Promise.resolve()
           .then(() => getEventsPromise(payroll.allEvents()))
           .then(events => {
-            assert.equal(events.length, 3, "incorrect amount of events emitted");
+            assert.equal(events.length, 4, "incorrect amount of events emitted");
           })
           .then(events => console.log(events))
           .then(() => payroll.lineCount())
@@ -80,24 +80,24 @@ contract("E2E", function(accounts) {
           })
           .then(() => Promise.all([
             payroll.lineInfo(0),
-            payroll.lineBalance(0)
+            payroll.linePayout(0)
           ]))
           .then(line => {
-            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
           })
           .then(() => Promise.all([
             payroll.lineInfo(1),
-            payroll.lineBalance(1)
+            payroll.linePayout(1)
           ]))
           .then(line => {
-            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
           })
           .then(() => Promise.all([
             payroll.lineInfo(2),
-            payroll.lineBalance(2)
+            payroll.linePayout(2)
           ]))
           .then(line => {
-            assert.equal(line[1].toString(), balanceForInfo(line[0]), "should have correct balance for " + line[0]);
+            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
           });
       })
       .then(() => done())
