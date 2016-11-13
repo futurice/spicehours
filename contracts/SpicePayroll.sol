@@ -1,6 +1,6 @@
 pragma solidity ^0.4.2;
 
-import "IBalanceConverter.sol";
+import "IPayrollCalculator.sol";
 
 contract SpicePayroll {
     struct PayrollLine {
@@ -10,33 +10,34 @@ contract SpicePayroll {
 
     address owner;
     address public handler;
-    IBalanceConverter public balanceConverter;
+    IPayrollCalculator public calculator;
 
     uint public fromTimestamp;
     uint public untilTimestamp;
 
     PayrollLine[] lines;
 
-    event ProcessLine(address indexed handler, bytes32 indexed info, uint input, uint output);
+    event ProcessLine(bytes32 indexed info, uint input, uint duration, uint payout);
 
     modifier onlyOwner {
         if (msg.sender != owner) throw;
         _;
     }
 
-    function SpicePayroll(address _handler, address _balanceConverter, uint _fromTimestamp) {
+    function SpicePayroll(address _handler, address _calculator, uint _fromTimestamp) {
         owner = msg.sender;
         handler = _handler;
-        balanceConverter = IBalanceConverter(_balanceConverter);
+        calculator = IPayrollCalculator(_calculator);
 
         fromTimestamp = _fromTimestamp;
         untilTimestamp = now;
     }
 
-    function processLine(bytes32 _info, uint _input) onlyOwner {
-        uint output = balanceConverter.convertBalance(_info, _input);
-        lines[lines.length++] = PayrollLine(_info, output);
-        ProcessLine(handler, _info, _input, output);
+    function processLine(bytes32 _info, uint _duration) onlyOwner {
+        uint paidDuration = calculator.calculatePaidDuration(_info, _duration);
+        uint payout = calculator.calculatePayout(_info, paidDuration);
+        lines[lines.length++] = PayrollLine(_info, payout);
+        ProcessLine(_info, _duration, paidDuration, payout);
     }
 
     function lineInfo(uint _index) constant returns (bytes32) {

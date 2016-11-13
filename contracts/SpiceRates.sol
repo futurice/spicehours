@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 
 import "SpiceControlled.sol";
-import "IBalanceConverter.sol";
+import "IPayrollCalculator.sol";
 
-contract SpiceRates is SpiceControlled, IBalanceConverter {
+contract SpiceRates is SpiceControlled, IPayrollCalculator {
     uint public maxTime;
     uint public hourlyRate;
     mapping(bytes32 => uint8) public unpaidPercentage;
@@ -33,12 +33,16 @@ contract SpiceRates is SpiceControlled, IBalanceConverter {
         unpaidPercentage[_info] = _percentage;
     }
 
-    function convertBalance(bytes32 _info, uint _input) returns (uint) {
-        if (_input > maxTime) {
-            _input = maxTime;
+    function calculatePaidDuration(bytes32 _info, uint _duration) returns (uint) {
+        if (_duration > maxTime) {
+            return maxTime;
+        } else {
+            return _duration;
         }
+    }
 
-        uint fullTimeOutput = _input * hourlyRate / 3600;
+    function calculatePayout(bytes32 _info, uint _duration) returns (uint) {
+        uint fullTimeOutput = _duration * hourlyRate / 3600;
         return (fullTimeOutput * (100 - unpaidPercentage[_info])) / 100;
     }
 }
