@@ -6,9 +6,11 @@ import "IPayrollCalculator.sol";
 contract SpicePayroll is SpiceControlled {
     struct PayrollLine {
         bytes32 info;
+        uint duration;
         uint payout;
     }
 
+    bool locked;
     address creator;
     address public handler;
     IPayrollCalculator public calculator;
@@ -20,10 +22,14 @@ contract SpicePayroll is SpiceControlled {
 
     event NewPayroll(address indexed handler, address indexed calculator, uint from, uint until);
     event ProcessLine(bytes32 indexed info, uint input, uint duration, uint payout);
-    event ModifyPayout(address indexed sender, bytes32 indexed info, uint payout);
+    event ModifyLine(address indexed sender, bytes32 indexed info, uint duration, uint payout);
 
     modifier onlyCreator {
         if (msg.sender != creator) throw;
+        _;
+    }
+    modifier onlyUnlocked {
+        if (locked) throw;
         _;
     }
 
@@ -38,20 +44,35 @@ contract SpicePayroll is SpiceControlled {
         NewPayroll(handler, calculator, fromTimestamp, untilTimestamp);
     }
 
-    function processLine(bytes32 _info, uint _duration) onlyCreator {
-        uint paidDuration = calculator.calculatePaidDuration(_info, _duration);
-        uint payout = calculator.calculatePayout(_info, paidDuration);
-        lines[lines.length++] = PayrollLine(_info, payout);
-        ProcessLine(_info, _duration, paidDuration, payout);
+    function processLine(bytes32 _info, uint _input) onlyCreator onlyUnlocked {
+        uint duration = calculator.calculatePaidDuration(_info, _input);
+        uint payout = calculator.calculatePayout(_info, duration);
+        lines[lines.length++] = PayrollLine(_info, duration, payout);
+        ProcessLine(_info, _input, duration, payout);
     }
 
-    function setLinePayout(uint _index, uint _payout) onlyDirector {
-        lines[_index].payout = _payout;
-        ModifyPayout(msg.sender, lineInfo(_index), _payout);
+    function modifyLine(uint _index, uint _duration) onlyDirector onlyUnlocked {
+        bytes32 info = lines[_index].info;
+        uint payout = calculator.calculatePayout(info, _duration);
+
+        lines[_index] = PayrollLine(info, _duration, payout);
+        ModifyLine(msg.sender, info, _duration, payout);
+    }
+
+    function lock() onlyDirector {
+        locked = true;
+    }
+
+    function unlock() onlyOwner {
+        locked = false;
     }
 
     function lineInfo(uint _index) constant returns (bytes32) {
         return lines[_index].info;
+    }
+
+    function lineDuration(uint _index) constant returns (uint) {
+        return lines[_index].duration;
     }
 
     function linePayout(uint _index) constant returns (uint) {

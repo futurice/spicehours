@@ -25,8 +25,7 @@ contract SpiceRates is SpiceControlled, IPayrollCalculator {
         maxTime = _maxTime;
     }
 
-    function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyMember {
-        if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
+    function setUnpaidPercentage(bytes32 _info, uint8 _percentage) onlyManager {
         if (_percentage > 100) throw;
         if (_info == 0) throw;
 
