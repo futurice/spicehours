@@ -34,7 +34,8 @@ function getMember(memberAddress) {
     members.memberInfo(memberAddress)
   ]).then(function(data) {
     var member = {
-      id: data[1].toNumber()
+      id: data[1].toNumber(),
+      address: memberAddress
     };
 
     if (memberAddress === data[0]) {
