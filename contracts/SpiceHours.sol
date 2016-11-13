@@ -19,7 +19,7 @@ contract SpiceHours is SpiceControlled {
     event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
     event FixHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
     event ProcessHours(address indexed sender, bytes32 indexed info, uint duration);
-    event Payroll(address indexed sender, address payroll);
+    event ProcessPayroll(address indexed sender, address payroll);
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         fromTimestamp = now;
@@ -37,11 +37,13 @@ contract SpiceHours is SpiceControlled {
         return balances[_info].duration;
     }
 
-    function adjustHours(bytes32 _info, int _duration) private {
-        if (_info == 0) throw;
-        if (_duration == 0) throw;
+    function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
+        if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
         if (_duration < 0 && balances[_info].duration < uint(-_duration)) throw;
+        if (_duration == 0) throw;
+        if (_info == 0) throw;
 
+        // If not avalable, add to infos to make interable
         if (!balances[_info].available) {
             balances[_info].available = true;
             infos.push(_info);
@@ -53,22 +55,13 @@ contract SpiceHours is SpiceControlled {
         } else {
             balances[_info].duration += uint(_duration);
         }
-    }
-
-    function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
-        if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
-
-        adjustHours(_info, _duration);
         MarkHours(msg.sender, _info, _description, _duration);
-    }
-
-    function fixHours(bytes32 _info, bytes32 _description, int _duration) onlyDirector {
-        adjustHours(_info, _duration);
-        FixHours(msg.sender, _info, _description, _duration);
     }
 
     function processPayroll(address _balanceConverter) onlyDirector {
         SpicePayroll payroll = new SpicePayroll(msg.sender, _balanceConverter, fromTimestamp);
+        ProcessPayroll(msg.sender, payroll);
+
         for (uint i = 0; i < infoCount; i++) {
             payroll.processLine(infos[i], balances[infos[i]].duration);
             ProcessHours(msg.sender, infos[i], balances[infos[i]].duration);
@@ -76,7 +69,6 @@ contract SpiceHours is SpiceControlled {
         }
         delete infos;
 
-        Payroll(msg.sender, payroll);
         payrolls.push(payroll);
         fromTimestamp = now;
     }

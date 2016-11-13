@@ -10,9 +10,6 @@ module.exports = function(callback) {
       hours.markHours(utils.encryptInfo('baz'), utils.strToBytes32('bazdescr'), 7200)
     ]))
     .then(() => Promise.all([
-      hours.fixHours(utils.encryptInfo('foo'), utils.strToBytes32('foodescr'), 900)
-    ]))
-    .then(() => Promise.all([
       hours.processPayroll(rates.address)
     ]))
     .then(() => Promise.all([

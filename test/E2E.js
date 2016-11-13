@@ -31,14 +31,13 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => hours.markHours(outsiderInfo1, 0, 144000, {from: director})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, 5400, {from: owner})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
-      .then(() => getTransaction(() => hours.fixHours(memberInfo, 0, -900, {from: director})))
       .then(() => Promise.all([
         hours.balance(memberInfo),
         hours.balance(outsiderInfo1),
         hours.balance(outsiderInfo2)
       ]))
       .then(balances => {
-        assert.equal(balances[0].toString(), "4500", "member balance incorrect");
+        assert.equal(balances[0].toString(), "5400", "member balance incorrect");
         assert.equal(balances[1].toString(), "144000", "outsider1 balance incorrect");
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
       });
@@ -49,7 +48,7 @@ contract("E2E", function(accounts) {
     var rates = SpiceRates.deployed();
 
     function balanceForInfo(info) {
-      if (info.substr(0, memberInfo.length) === memberInfo) return "15000000"; // 1.25h * 0.8 * 15000000
+      if (info.substr(0, memberInfo.length) === memberInfo) return "18000000"; // 1.5h * 0.8 * 15000000
       if (info.substr(0, outsiderInfo1.length) === outsiderInfo1) return "450000000"; // 30h * 15000000
       if (info.substr(0, outsiderInfo2.length) === outsiderInfo2) return "20833333"; // 5000/3600h * 15000000
       return "0";

@@ -126,10 +126,9 @@ router.get('/hours/:info/events', (req, res, next) => {
   const hours = SpiceHours.deployed();
   Promise.all([
     getEvents(hours.MarkHours, filter, { fromBlock }),
-    getEvents(hours.FixHours, filter, { fromBlock }),
     getEvents(hours.ProcessHours, filter, { fromBlock })
-  ]).then(([markEvents, fixEvents, processEvents]) => {
-    const events = _.sortBy('blockNumber', _.concat(_.concat(markEvents, fixEvents), processEvents));
+  ]).then(([markEvents, processEvents]) => {
+    const events = _.sortBy('blockNumber', _.concat(markEvents, processEvents));
     res.json(_.map(processEvent, events));
   }).catch(err => next(err));
 });
