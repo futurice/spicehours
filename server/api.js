@@ -1,9 +1,11 @@
 const _ = require('lodash/fp');
 const express = require('express');
-const contracts = require('./eth').contracts;
+const eth = require('./eth');
 const utils = require('./utils');
 
 const router = express.Router();
+const web3 = eth.web3;
+const contracts = eth.contracts;
 const SpiceMembers = contracts.SpiceMembers;
 const SpiceHours = contracts.SpiceHours;
 
@@ -127,6 +129,13 @@ router.get('/hours/balances', (req, res, next) => {
     )
     .then(balances => res.json(balances))
     .catch(next);
+});
+
+router.get('/block/:id', (req, res, next) => {
+  web3.eth.getBlock(req.params.id, (err, block) => {
+    if (err) return next(err);
+    res.json(block);
+  });
 });
 
 router.get('/hours/events', (req, res, next) => {
