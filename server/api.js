@@ -104,7 +104,7 @@ function getEvents(event, ...args) {
 
 router.post('/hours/:info/markings', (req, res, next) => {
   if (!_.isNumber(req.body.duration))
-    return res.status(400).json({ error: 'Bad Request' });
+    return res.status(400).json(errorJson('Bad Request'));
 
   const info = utils.encryptInfo(req.params.info);
   const descr = utils.strToBytes32(req.body.description);
@@ -131,9 +131,17 @@ router.get('/hours/balances', (req, res, next) => {
     .catch(next);
 });
 
+function errorJson(err) {
+  if (_.isError(err)) {
+    return { error: err.message.split('\n')[0] };
+  } else {
+    return { error: err };
+  }
+}
+
 router.get('/block/:id', (req, res, next) => {
   web3.eth.getBlock(req.params.id, (err, block) => {
-    if (err) return next(err);
+    if (err) res.status(404).json(errorJson(err));
     res.json(block);
   });
 });
