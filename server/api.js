@@ -102,7 +102,7 @@ function getEvents(event, ...args) {
   });
 }
 
-router.post('/hours/:info/markings', (req, res, next) => {
+router.post('/hours/:info', (req, res, next) => {
   if (!_.isNumber(req.body.duration))
     return res.status(400).json(errorJson('Bad Request'));
 

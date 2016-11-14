@@ -1,15 +1,50 @@
-<html>
-<head>
-  <title>Hello World</title>
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<html lang="en">
+  <head>
+    <title>Hello World</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-</head>
-<body>
-  Hello World!
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-</body>
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  </head>
+  <body>
+    Hello World!
+    <ul class="list-group">
+    </ul>
+    <input type="number" step="any" class="form-control" aria-label="Number of hours">
+    <input type="text" class="form-control" aria-label="Description link">
+    <button class="btn btn-default" type="button">Send</button>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script>
+      function fetchEvents() {
+        $.getJSON('/api/hours/jvah/events', function(data) {
+          var elems = data.map(function(val) {
+            return '<li class="list-group-item">' + JSON.stringify(val) + '</li>';
+          });
+          $('ul.list-group').html(elems.join(''));
+        });
+      }
+      $(document).ready(function() {
+        fetchEvents();
+        $('button').click(function(event) {
+          var data = {
+            description: 'foobar',
+            duration: 3600
+          };
+          $.ajax({
+            type: 'POST',
+            url: '/api/hours/jvah',
+            data: JSON.stringify(data),
+            success: fetchEvents,
+            dataType: 'json',
+            contentType: 'application/json',
+            processData: false
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
