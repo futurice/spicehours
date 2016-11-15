@@ -146,36 +146,48 @@ router.get('/block/:id', (req, res, next) => {
   });
 });
 
+function processEvent(event) {
+  event = _.flow(
+    _.update('args.info', info => info && utils.decryptInfo(info)),
+    _.update('args.description', utils.bytes32ToStr)
+  )(event);
+
+  const blockHash = _.get('blockHash', event);
+  if (_.isNil(blockHash)) {
+    return Promise.resolve(event);
+  } else {
+    return new Promise((resolve, reject) => {
+      web3.eth.getBlock(blockHash, (err, block) => {
+        if (err) return reject(err);
+        resolve(_.assoc('block', block, event));
+      });
+    });
+  }
+}
+
 router.get('/hours/events', (req, res, next) => {
   const fromBlock = 0;
-  const processEvent = _.flow(
-      _.update('args.info', info => info && utils.decryptInfo(info)),
-      _.update('args.description', utils.bytes32ToStr)
-  );
-
   const hours = SpiceHours.deployed();
   getEvents(hours.allEvents, { fromBlock })
-    .then(events =>
-      res.json(_.map(processEvent, events))
-    ).catch(next);
+    .then(events => Promise.all(_.map(processEvent, events)))
+    .then(events => res.json(events))
+    .catch(next);
 });
 
 router.get('/hours/:info/events', (req, res, next) => {
   const filter = { info: utils.encryptInfo(req.params.info) };
-  const processEvent = _.flow(
-      _.update('args.info', info => info && utils.decryptInfo(info)),
-      _.update('args.description', utils.bytes32ToStr)
-  );
   const fromBlock = 0;
 
   const hours = SpiceHours.deployed();
   Promise.all([
     getEvents(hours.MarkHours, filter, { fromBlock }),
     getEvents(hours.ProcessHours, filter, { fromBlock })
-  ]).then(([markEvents, processEvents]) => {
-    const events = _.sortBy(['blockNumber', 'logIndex'], _.concat(markEvents, processEvents));
-    res.json(_.map(processEvent, events));
-  }).catch(err => next(err));
+  ]).then(([markEvents, processEvents]) =>
+    _.sortBy(['blockNumber', 'logIndex'], _.concat(markEvents, processEvents))
+  )
+  .then(events => Promise.all(_.map(processEvent, events)))
+  .then(events => res.json(events))
+  .catch(err => next(err));
 });
 
 module.exports = router;
