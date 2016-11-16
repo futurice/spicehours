@@ -13,7 +13,8 @@
     "migrate:live": "truffle migrate --network live",
     "testrpc": "testrpc",
     "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL",
-    "start": "testrpc & (npm run migrate:dev && nodemon server) ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi"
+    "start": "testrpc & (npm run migrate:dev && npm run server) ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi",
+    "server": "nodemon server"
   },
   "repository": {
     "type": "git",
