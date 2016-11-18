@@ -1,23 +1,23 @@
 var utils = require('./utils');
 
-var NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-var getEventsPromise = utils.getEventsPromise;
-var getTransaction = utils.getTransaction;
-var getTransactionError = utils.getTransactionError;
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const getEventsPromise = utils.getEventsPromise;
+const getTransaction = utils.getTransaction;
+const getTransactionError = utils.getTransactionError;
 
 contract("E2E", function(accounts) {
-  var owner = accounts[0];
-  var director = accounts[1];
-  var manager = accounts[2];
-  var member = accounts[3];
-  var memberInfo = web3.fromUtf8("foobar");
+  const owner = accounts[0];
+  const director = accounts[1];
+  const manager = accounts[2];
+  const member = accounts[3];
 
-  var outsiderInfo1 = web3.fromUtf8("barbaz");
-  var outsiderInfo2 = web3.fromUtf8("bazquux");
+  const memberInfo = web3.fromUtf8("foobar");
+  const outsiderInfo1 = web3.fromUtf8("barbaz");
+  const outsiderInfo2 = web3.fromUtf8("bazquux");
 
   it("should be able to handle a complete payroll", function(done) {
-    var members = SpiceMembers.deployed();
-    var hours = SpiceHours.deployed();
+    const members = SpiceMembers.deployed();
+    const hours = SpiceHours.deployed();
 
     Promise.resolve()
       .then(() => getTransaction(() => members.addMember(director, {from: owner})))
@@ -31,23 +31,31 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => hours.markHours(outsiderInfo1, 0, 144000, {from: director})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, 5400, {from: owner})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
-      .then(() => Promise.all([
-        hours.balance(memberInfo),
-        hours.balance(outsiderInfo1),
-        hours.balance(outsiderInfo2)
-      ]))
+      .then(() => hours.currentPayroll())
+      .then(payrollAddress => {
+        const payroll = SpicePayroll.at(payrollAddress);
+        return Promise.all([
+          payroll.duration(memberInfo),
+          payroll.duration(outsiderInfo1),
+          payroll.duration(outsiderInfo2)
+        ]);
+      })
       .then(balances => {
         assert.equal(balances[0].toString(), "5400", "member balance incorrect");
         assert.equal(balances[1].toString(), "144000", "outsider1 balance incorrect");
         assert.equal(balances[2].toString(), "5000", "outsider2 balance incorrect");
-        done();
       })
+      .then(() => done())
       .catch(done);
   });
 
   it("should have calculated the hours correctly", function(done) {
-    var hours = SpiceHours.deployed();
-    var rates = SpiceRates.deployed();
+    const hours = SpiceHours.deployed();
+    const rates = SpiceRates.deployed();
+
+    const memberInfo = web3.fromUtf8("foobar");
+    const outsiderInfo1 = web3.fromUtf8("barbaz");
+    const outsiderInfo2 = web3.fromUtf8("bazquux");
 
     function payoutForInfo(info) {
       if (info.substr(0, memberInfo.length) === memberInfo) return "18000000"; // 1.5h * 0.8 * 15000000
@@ -58,10 +66,10 @@ contract("E2E", function(accounts) {
 
     Promise.resolve()
       .then(() => getTransaction(() => rates.setUnpaidPercentage(memberInfo, 20)))
-      .then(() => getTransaction(() => hours.processPayroll(rates.address)))
+      .then(() => getTransaction(() => hours.processPayroll(rates.address, 30*60*60)))
       .then(() => hours.payrollCount())
       .then(payrollCount => {
-        assert.equal(payrollCount.valueOf(), 1, "should have one payroll");
+        assert.equal(payrollCount.toString(), "2", "should have two payrolls");
       })
       .then(() => hours.payrolls(0))
       .then(payrollAddress => {
@@ -74,30 +82,21 @@ contract("E2E", function(accounts) {
             assert.equal(events.length, 4, "incorrect amount of events emitted");
           })
           .then(events => console.log(events))
-          .then(() => payroll.lineCount())
-          .then(lineCount => {
-            assert.equal(lineCount.valueOf(), 3, "should have three payroll lines");
+          .then(() => payroll.entryCount())
+          .then(entryCount => {
+            assert.equal(entryCount.toString(), "3", "should have three payroll lines");
           })
-          .then(() => Promise.all([
-            payroll.lineInfo(0),
-            payroll.linePayout(0)
-          ]))
-          .then(line => {
-            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
+          .then(() => payroll.payout(memberInfo))
+          .then(payout => {
+            assert.equal(payout.toString(), payoutForInfo(memberInfo), "should have correct payout for " + memberInfo);
           })
-          .then(() => Promise.all([
-            payroll.lineInfo(1),
-            payroll.linePayout(1)
-          ]))
-          .then(line => {
-            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
+          .then(() => payroll.payout(memberInfo))
+          .then(payout => {
+            assert.equal(payout.toString(), payoutForInfo(memberInfo), "should have correct payout for " + memberInfo);
           })
-          .then(() => Promise.all([
-            payroll.lineInfo(2),
-            payroll.linePayout(2)
-          ]))
-          .then(line => {
-            assert.equal(line[1].toString(), payoutForInfo(line[0]), "should have correct payout for " + line[0]);
+          .then(() => payroll.payout(memberInfo))
+          .then(payout => {
+            assert.equal(payout.toString(), payoutForInfo(memberInfo), "should have correct payout for " + memberInfo);
           });
       })
       .then(() => done())

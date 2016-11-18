@@ -4,7 +4,7 @@ module.exports = function(deployer) {
       return deployer.deploy(SpiceHours, SpiceMembers.address);
     })
     .then(function() {
-      // Deploy with default max time per payroll 30h and 15e * 1000000 hourly rate
-      return deployer.deploy(SpiceRates, SpiceMembers.address, 30*3600, 15000000);
+      // Deploy with default 15e * 1000000 hourly rate
+      return deployer.deploy(SpiceRates, SpiceMembers.address, 15000000);
     });
 };

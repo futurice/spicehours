@@ -1,85 +1,130 @@
 pragma solidity ^0.4.2;
 
 import "SpiceControlled.sol";
-import "IPayrollCalculator.sol";
+import "IPayoutCalculator.sol";
 
 contract SpicePayroll is SpiceControlled {
-    struct PayrollLine {
-        bytes32 info;
+    struct PayrollEntry {
+        bool available;
         uint duration;
+        bool processed;
         uint payout;
     }
 
-    bool locked;
     address creator;
-    address public handler;
-    IPayrollCalculator public calculator;
 
-    uint public fromTimestamp;
-    uint public untilTimestamp;
+    uint public fromBlock;
+    uint public toBlock;
 
-    PayrollLine[] lines;
+    mapping (bytes32 => PayrollEntry) entries;
+    bytes32[] public infos;
 
-    event NewPayroll(address indexed handler, address indexed calculator, uint from, uint until);
-    event ProcessLine(bytes32 indexed info, uint input, uint duration, uint payout);
-    event ModifyLine(address indexed sender, bytes32 indexed info, uint duration, uint payout);
+    address calculator;
+    bool locked;
+
+    event NewPayroll(address indexed creator);
+    event AddMarking(bytes32 indexed info, bytes32 indexed description, int duration);
+    event ProcessMarkings(bytes32 indexed info, uint total, uint duration, uint payout);
+    event AllMarkingsProcessed(address indexed calculator, uint maxDuration, uint fromBlock, uint toBlock);
+
+    event ModifyMarking(bytes32 indexed info, uint duration, uint payout);
+    event SetPayrollLocked(bool locked);
 
     modifier onlyCreator {
         if (msg.sender != creator) throw;
         _;
     }
+
+    modifier onlyUnprocessed {
+        if (calculator != 0) throw;
+        _;
+    }
+
+    modifier onlyProcessed {
+        if (calculator == 0) throw;
+        _;
+    }
+
     modifier onlyUnlocked {
         if (locked) throw;
         _;
     }
 
-    function SpicePayroll(address _members, address _handler, address _calculator, uint _fromTimestamp) SpiceControlled(_members) {
+    function SpicePayroll(address _members) SpiceControlled(_members) {
         creator = msg.sender;
-
-        handler = _handler;
-        calculator = IPayrollCalculator(_calculator);
-        fromTimestamp = _fromTimestamp;
-        untilTimestamp = now;
-
-        NewPayroll(handler, calculator, fromTimestamp, untilTimestamp);
+        fromBlock = block.number;
+        NewPayroll(msg.sender);
     }
 
-    function processLine(bytes32 _info, uint _input) onlyCreator onlyUnlocked {
-        uint duration = calculator.calculatePaidDuration(_info, _input);
-        uint payout = calculator.calculatePayout(_info, duration);
-        lines[lines.length++] = PayrollLine(_info, duration, payout);
-        ProcessLine(_info, _input, duration, payout);
+    function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed {
+        if (_duration < 0 && entries[_info].duration < uint(-_duration)) throw;
+        if (_duration == 0) throw;
+        if (_info == 0) throw;
+
+        // If not avalable, add to infos to make iterable
+        if (!entries[_info].available) {
+            entries[_info].available = true;
+            infos.push(_info);
+        }
+
+        if (_duration < 0) {
+            entries[_info].duration -= uint(-_duration);
+        } else {
+            entries[_info].duration += uint(_duration);
+        }
+        AddMarking(_info, _description, _duration);
     }
 
-    function modifyLine(uint _index, uint _duration) onlyDirector onlyUnlocked {
-        bytes32 info = lines[_index].info;
-        uint payout = calculator.calculatePayout(info, _duration);
+    function processMarkings(address _calculator, uint _maxDuration) onlyCreator onlyUnprocessed {
+        calculator = _calculator;
+        for (uint i = 0; i < infos.length; i++) {
+            bytes32 info = infos[i];
+            PayrollEntry entry = entries[info];
 
-        lines[_index] = PayrollLine(info, _duration, payout);
-        ModifyLine(msg.sender, info, _duration, payout);
+            uint duration = (entry.duration <= _maxDuration) ? entry.duration : _maxDuration;
+            uint payout = IPayoutCalculator(calculator).calculatePayout(info, duration);
+            ProcessMarkings(info, entry.duration, duration, payout);
+
+            entry.duration = duration;
+            entry.payout = payout;
+        }
+
+        toBlock = block.number;
+        AllMarkingsProcessed(_calculator, _maxDuration, fromBlock, toBlock);
+    }
+
+    function modifyMarking(bytes32 _info, uint _duration) onlyDirector onlyProcessed onlyUnlocked {
+        if (!entries[_info].available) throw;
+
+        PayrollEntry entry = entries[_info];
+        entry.duration = _duration;
+        entry.payout = IPayoutCalculator(calculator).calculatePayout(_info, _duration);
+        ModifyMarking(_info, entry.duration, entry.payout);
     }
 
     function lock() onlyDirector {
         locked = true;
+        SetPayrollLocked(locked);
     }
 
     function unlock() onlyOwner {
         locked = false;
+        SetPayrollLocked(locked);
     }
 
-    function lineInfo(uint _index) constant returns (bytes32) {
-        return lines[_index].info;
+    function duration(bytes32 _info) constant returns (uint) {
+        return entries[_info].duration;
     }
 
-    function lineDuration(uint _index) constant returns (uint) {
-        return lines[_index].duration;
+    function payout(bytes32 _info) constant returns (uint) {
+        return entries[_info].payout;
     }
 
-    function linePayout(uint _index) constant returns (uint) {
-        return lines[_index].payout;
+    function entryInfo(uint _index) constant returns (bytes32) {
+        return infos[_index];
     }
 
-    function lineCount() constant returns (uint) {
-        return lines.length;
+    function entryCount() constant returns (uint) {
+        return infos.length;
     }
 }

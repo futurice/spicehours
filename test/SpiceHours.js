@@ -8,9 +8,12 @@ contract("SpiceHours", function(accounts) {
   describe("balance", function() {
 
     it("should be zero in the beginning", function() {
-      var contract = SpiceHours.deployed();
-      return contract.balance(accounts[0]).then(function(balance) {
-        assert.equal(balance.valueOf(), 0, "balance should be zero");
+      const contract = SpiceHours.deployed();
+      return contract.currentPayroll(payrollAddress => {
+        const payroll = SpicePayroll.at(payrollAddress);
+        payroll.balance(accounts[0]).then(balance => {
+          assert.equal(balance.toString(), "0", "balance should be zero");
+        });
       });
     });
   });
