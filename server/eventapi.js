@@ -1,4 +1,5 @@
 const socketio = require('socket.io');
+const utils = require('./utils');
 const eth = require('./eth');
 
 const web3 = eth.web3;
@@ -43,6 +44,26 @@ function attachTransactions(io, addresses) {
       sendTransaction(io, addresses[tx.to], tx);
     })
   );
+  return pendingFilter;
+}
+
+function attachEvent(io, name, event, proc) {
+  const eventFilter = event();
+  eventFilter.watch((err, event) => {
+    if (err) return io.emit('error', err.message);
+    if (proc) event = proc(event);
+    io.emit(name + '/event', JSON.stringify(event));
+  });
+  return eventFilter;
+}
+
+function processEvent(event) {
+  const args = event.args;
+  if (args) {
+    if (args.info) args.info = utils.decryptInfo(args.info);
+    args.description = utils.bytes32ToStr(args.description);
+  }
+  return event;
 }
 
 function attach(io) {
@@ -51,6 +72,10 @@ function attach(io) {
     [SpiceHours.address]: 'hours'
   };
   attachTransactions(io, addresses);
+
+  const hours = SpiceHours.deployed();
+  attachEvent(io, 'hours', hours.MarkHours, processEvent);
+  attachEvent(io, 'hours', hours.ProcessPayroll, processEvent);
 }
 
 exports.attach = attach;

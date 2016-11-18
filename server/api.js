@@ -152,17 +152,7 @@ function processEvent(event) {
     _.update('args.description', utils.bytes32ToStr)
   )(event);
 
-  const blockHash = _.get('blockHash', event);
-  if (_.isNil(blockHash)) {
-    return Promise.resolve(event);
-  } else {
-    return new Promise((resolve, reject) => {
-      web3.eth.getBlock(blockHash, (err, block) => {
-        if (err) return reject(err);
-        resolve(_.assoc('block', block, event));
-      });
-    });
-  }
+  return Promise.resolve(event);
 }
 
 router.get('/hours/events', (req, res, next) => {
