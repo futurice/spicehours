@@ -1,4 +1,5 @@
 const socketio = require('socket.io');
+const AllEvents = require('web3/lib/web3/allevents');
 const utils = require('./utils');
 const eth = require('./eth');
 
@@ -9,35 +10,50 @@ const SpiceRates = eth.contracts.SpiceRates;
 
 const pendingTransactions = {};
 
-function handleTransaction(io, name, tx) {
-  const timeout = 0;
-  const start = new Date().getTime();
+function handleBlock(io, block) {
+  block = Object.assign({}, block);
+  block.transactions = block.transactions.map(tx => tx.hash);
+  io.emit('block', JSON.stringify(block));
+}
 
+function handleLog(io, contracts, data, proc) {
+  const contractInfo = findContract(contracts, data.address);
+  if (!contractInfo) return;
+  const [name, contract] = contractInfo;
+
+  // NOTICE: This uses web3 internals and is a bit ugly, may break later
+  const events = contract.abi.filter(json => json.type === 'event');
+  const all = new AllEvents(web3._requestManager, events, contract.address);
+  const decoded = all.decode(data);
+
+  const event = proc ? proc(decoded) : decoded;
+  io.emit(name + '/event', JSON.stringify(event));
+}
+
+function handleTransactionReceipt(io, contracts, receipt, proc) {
+  const contractInfo = findContract(contracts, receipt.to);
+  if (contractInfo) {
+    const name = contractInfo[0];
+    io.emit(name + '/receipt', JSON.stringify(receipt));
+  }
+
+  receipt.logs.forEach(data => {
+    handleLog(io, contracts, data, proc);
+  });
+}
+
+function handleTransaction(io, contracts, tx) {
+  const contractInfo = findContract(contracts, tx.to);
+  if (!contractInfo) return;
+
+  const name = contractInfo[0];
   if (!tx.blockNumber) {
     io.emit(name + '/pending', JSON.stringify(tx));
     pendingTransactions[tx.hash] = tx;
+  } else {
+    io.emit(name + '/tx', JSON.stringify(tx));
+    delete pendingTransactions[tx.hash];
   }
-
-  function sendAfterReceipt() {
-    web3.eth.getTransactionReceipt(tx.hash, (err, receipt) => {
-      if (err) return io.emit('error', err.message);
-
-      if (receipt) {
-        delete pendingTransactions[tx.hash];
-        web3.eth.getTransaction(tx.hash, (err, tx) => {
-          if (err) return io.emit('error', err.message);
-          io.emit(name + '/tx', JSON.stringify(tx));
-          io.emit(name + '/receipt', JSON.stringify(receipt));
-        });
-      } else if (timeout > 0 && new Date().getTime() - start > timeout) {
-        io.emit('error', `Transaction ${tx.hash} wasn't processed in ${timeout / 1000} seconds`);
-      } else {
-        setTimeout(sendAfterReceipt, 200);
-      }
-    });
-  }
-
-  sendAfterReceipt();
 }
 
 function findContract(contracts, address) {
@@ -46,23 +62,36 @@ function findContract(contracts, address) {
     .find(([name, contract]) => (address == contract.address));
 }
 
-function attachTransactions(io, contracts) {
-  const pendingFilter = web3.eth.filter('pending');
-  pendingFilter.watch((err, txid) =>
-    web3.eth.getTransaction(txid, (err, tx) => {
-      const contractInfo = findContract(contracts, tx.to);
-      if (contractInfo) {
-        handleTransaction(io, contractInfo[0], tx);
-      }
-    })
-  );
+function attachEvents(io, contracts, proc) {
+  const latestFilter = web3.eth.filter('latest');
+  latestFilter.watch((err, blockid) => {
+    if (err) return io.emit('error', err.message);
+    web3.eth.getBlock(blockid, true, (err, block) => {
+      if (err) return io.emit('error', err.message);
+
+      handleBlock(io, block);
+      block.transactions.forEach(tx => {
+        const contractInfo = findContract(contracts, tx.to);
+        if (!contractInfo) return;
+
+        handleTransaction(io, contracts, tx);
+        web3.eth.getTransactionReceipt(tx.hash, (err, receipt) => {
+          if (err) return io.emit('error', err.message);
+          handleTransactionReceipt(io, contracts, receipt, proc);
+        });
+      });
+    });
+  });
 }
 
-function attachEvents(io, name, eventFilter, proc) {
-  eventFilter.watch((err, event) => {
+function attachTransactions(io, contracts) {
+  const pendingFilter = web3.eth.filter('pending');
+  pendingFilter.watch((err, txid) => {
     if (err) return io.emit('error', err.message);
-    if (proc) event = proc(event);
-    io.emit(name + '/event', JSON.stringify(event));
+    web3.eth.getTransaction(txid, (err, tx) => {
+      if (err) return io.emit('error', err.message);
+      handleTransaction(io, contracts, tx);
+    });
   });
 }
 
@@ -81,13 +110,8 @@ function attach(io) {
     hours: SpiceHours,
     rates: SpiceRates
   };
+  attachEvents(io, contracts, processEvent);
   attachTransactions(io, contracts);
-
-  const hours = SpiceHours.deployed();
-  attachEvents(io, 'hours', hours.allEvents(), processEvent);
-
-  const rates = SpiceRates.deployed();
-  attachEvents(io, 'rates', rates.allEvents(), processEvent);
 }
 
 exports.pending = pendingTransactions;

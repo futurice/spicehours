@@ -73,6 +73,9 @@
     });
 
     var socket = io();
+    socket.on('block', function(msg) {
+      console.log('block: ' + msg);
+    });
     socket.on('hours/pending', function(msg) {
       console.log('hours pending: ' + msg);
       const tx = JSON.parse(msg);
