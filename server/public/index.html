@@ -20,33 +20,5 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="/index.js"></script>
-    <script>
-      function fetchEvents() {
-        $.getJSON('/api/hours/jvah/events', function(data) {
-          var elems = data.map(function(val) {
-            return '<li class="list-group-item">' + JSON.stringify(val) + '</li>';
-          });
-          $('ul.list-group').html(elems.join(''));
-        });
-      }
-      $(document).ready(function() {
-        fetchEvents();
-        $('button').click(function(event) {
-          var data = {
-            description: 'foobar',
-            duration: 3600
-          };
-          $.ajax({
-            type: 'POST',
-            url: '/api/hours/jvah',
-            data: JSON.stringify(data),
-            success: fetchEvents,
-            dataType: 'json',
-            contentType: 'application/json',
-            processData: false
-          });
-        });
-      });
-    </script>
   </body>
 </html>
