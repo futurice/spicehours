@@ -5,13 +5,12 @@ const eth = require('./eth');
 const web3 = eth.web3;
 const SpiceMembers = eth.contracts.SpiceMembers;
 const SpiceHours = eth.contracts.SpiceHours;
+const SpiceRates = eth.contracts.SpiceRates;
 
 const pendingTransactions = {};
 
 function handleTransaction(io, name, tx) {
-  if (!name) return; // No name, send nothing
-
-  const timeout = 240000;
+  const timeout = 0;
   const start = new Date().getTime();
 
   if (!tx.blockNumber) {
@@ -41,24 +40,30 @@ function handleTransaction(io, name, tx) {
   sendAfterReceipt();
 }
 
-function attachTransactions(io, addresses) {
+function findContract(contracts, address) {
+  return Object.keys(contracts)
+    .map(name => [name, contracts[name]])
+    .find(([name, contract]) => (address == contract.address));
+}
+
+function attachTransactions(io, contracts) {
   const pendingFilter = web3.eth.filter('pending');
   pendingFilter.watch((err, txid) =>
     web3.eth.getTransaction(txid, (err, tx) => {
-      handleTransaction(io, addresses[tx.to], tx);
+      const contractInfo = findContract(contracts, tx.to);
+      if (contractInfo) {
+        handleTransaction(io, contractInfo[0], tx);
+      }
     })
   );
-  return pendingFilter;
 }
 
-function attachEvent(io, name, event, proc) {
-  const eventFilter = event();
+function attachEvents(io, name, eventFilter, proc) {
   eventFilter.watch((err, event) => {
     if (err) return io.emit('error', err.message);
     if (proc) event = proc(event);
     io.emit(name + '/event', JSON.stringify(event));
   });
-  return eventFilter;
 }
 
 function processEvent(event) {
@@ -71,15 +76,18 @@ function processEvent(event) {
 }
 
 function attach(io) {
-  const addresses = {
-    [SpiceMembers.address]: 'members',
-    [SpiceHours.address]: 'hours'
+  const contracts = {
+    members: SpiceMembers,
+    hours: SpiceHours,
+    rates: SpiceRates
   };
-  attachTransactions(io, addresses);
+  attachTransactions(io, contracts);
 
   const hours = SpiceHours.deployed();
-  attachEvent(io, 'hours', hours.MarkHours, processEvent);
-  attachEvent(io, 'hours', hours.ProcessPayroll, processEvent);
+  attachEvents(io, 'hours', hours.allEvents(), processEvent);
+
+  const rates = SpiceRates.deployed();
+  attachEvents(io, 'rates', rates.allEvents(), processEvent);
 }
 
 exports.pending = pendingTransactions;
