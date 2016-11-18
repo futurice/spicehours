@@ -6,6 +6,7 @@ function fetchEvents() {
     $('ul.list-group').html(elems.join(''));
   });
 }
+
 $(document).ready(function() {
   fetchEvents();
   $('button').click(function(event) {
@@ -22,5 +23,16 @@ $(document).ready(function() {
       contentType: 'application/json',
       processData: false
     });
+  });
+
+  var socket = io();
+  socket.on('hours/pending', function(msg) {
+    console.log('hours pending: ' + msg);
+  });
+  socket.on('hours/tx', function(msg) {
+    console.log('hours tx: ' + msg);
+  });
+  socket.on('hours/receipt', function(msg) {
+    console.log('hours receipt: ' + msg);
   });
 });
