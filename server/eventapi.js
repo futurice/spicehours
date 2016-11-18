@@ -6,7 +6,9 @@ const web3 = eth.web3;
 const SpiceMembers = eth.contracts.SpiceMembers;
 const SpiceHours = eth.contracts.SpiceHours;
 
-function sendTransaction(io, name, tx) {
+const pendingTransactions = {};
+
+function handleTransaction(io, name, tx) {
   if (!name) return; // No name, send nothing
 
   const timeout = 240000;
@@ -14,6 +16,7 @@ function sendTransaction(io, name, tx) {
 
   if (!tx.blockNumber) {
     io.emit(name + '/pending', JSON.stringify(tx));
+    pendingTransactions[tx.hash] = tx;
   }
 
   function sendAfterReceipt() {
@@ -21,6 +24,7 @@ function sendTransaction(io, name, tx) {
       if (err) return io.emit('error', err.message);
 
       if (receipt) {
+        delete pendingTransactions[tx.hash];
         web3.eth.getTransaction(tx.hash, (err, tx) => {
           if (err) return io.emit('error', err.message);
           io.emit(name + '/tx', JSON.stringify(tx));
@@ -41,7 +45,7 @@ function attachTransactions(io, addresses) {
   const pendingFilter = web3.eth.filter('pending');
   pendingFilter.watch((err, txid) =>
     web3.eth.getTransaction(txid, (err, tx) => {
-      sendTransaction(io, addresses[tx.to], tx);
+      handleTransaction(io, addresses[tx.to], tx);
     })
   );
   return pendingFilter;
@@ -78,4 +82,5 @@ function attach(io) {
   attachEvent(io, 'hours', hours.ProcessPayroll, processEvent);
 }
 
+exports.pending = pendingTransactions;
 exports.attach = attach;

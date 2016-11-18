@@ -22,10 +22,16 @@
     hoursEvents.sort(eventComparator);
   }
 
-  function fetchEvents() {
-    $.getJSON('/api/hours/jvah/events', function(data) {
+  function fetchInitial() {
+    $.getJSON('/api/hours/events', function(data) {
       data.forEach(function(event) {
         addHoursEvent(event);
+      });
+      updateEventList();
+    });
+    $.getJSON('/api/hours/pending', function(data) {
+      data.forEach(function(tx) {
+        hoursPending[tx.hash] = tx;
       });
       updateEventList();
     });
@@ -42,7 +48,7 @@
   }
 
   $(document).ready(function() {
-    fetchEvents();
+    fetchInitial();
     $('button').click(function(event) {
       var data = {
         description: 'foobar',

@@ -2,6 +2,7 @@ const _ = require('lodash/fp');
 const express = require('express');
 const eth = require('./eth');
 const utils = require('./utils');
+const eventapi = require('./eventapi');
 
 const router = express.Router();
 const web3 = eth.web3;
@@ -154,6 +155,14 @@ function processEvent(event) {
 
   return Promise.resolve(event);
 }
+
+router.get('/hours/pending', (req, res, next) => {
+  const allPending = eventapi.pending;
+  const pending = Object.keys(allPending)
+    .map(txid => allPending[txid])
+    .filter(tx => !!tx);
+  res.json(pending);
+});
 
 router.get('/hours/events', (req, res, next) => {
   const fromBlock = 0;
