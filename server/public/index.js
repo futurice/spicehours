@@ -38,13 +38,21 @@
   }
 
   function updateEventList() {
-    var elems = hoursEvents.map(function(event) {
-      return '<li class="list-group-item">' + JSON.stringify(event) + '</li>';
+    var $listEl = $('ul.list-group');
+    var $events = hoursEvents.map(function(event) {
+      if (event.event === 'MarkHours') {
+        var eventInfo = '';
+        eventInfo += 'Marking from ' + event.args.info;
+        eventInfo += ' description ' + event.args.description;
+        eventInfo += ' duration ' + event.args.duration;
+        return $('<li>').addClass('list-group-item').text(eventInfo);
+      }
     });
-    var pending = Object.values(hoursPending).map(function(tx) {
-      return '<li class="list-group-item">' + JSON.stringify(tx) + '</li>';
-    });
-    $('ul.list-group').html(elems.join('') + pending.join(''));
+    $listEl.empty().append($events);
+    var pendingLength = Object.keys(hoursPending).length;
+    if (pendingLength > 0) {
+      $listEl.append($('<li>').addClass('list-group-item').text(pendingLength + ' transactions pending'));
+    }
   }
 
   $(document).ready(function() {
