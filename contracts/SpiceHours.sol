@@ -7,7 +7,6 @@ contract SpiceHours is SpiceControlled {
     address[] public payrolls;
 
     event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
-    event FixHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
     event ProcessPayroll(address indexed sender, address indexed payroll, uint maxDuration);
 
     function SpiceHours(address _members) SpiceControlled(_members) {

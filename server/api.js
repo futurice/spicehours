@@ -181,7 +181,7 @@ router.get('/hours/:info/events', (req, res, next) => {
   const hours = SpiceHours.deployed();
   Promise.all([
     getEvents(hours.MarkHours, filter, { fromBlock }),
-    getEvents(hours.ProcessHours, filter, { fromBlock })
+    getEvents(hours.ProcessPayroll, filter, { fromBlock })
   ]).then(([markEvents, processEvents]) =>
     _.sortBy(['blockNumber', 'logIndex'], _.concat(markEvents, processEvents))
   )
