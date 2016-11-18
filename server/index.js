@@ -3,7 +3,6 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var eth = require('./eth');
 var eventapi = require('./eventapi');
-var ethapi = require('./ethapi');
 var api = require('./api');
 
 var app = express();
@@ -12,7 +11,6 @@ var io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
-app.use('/api/', ethapi);
 app.use('/api/', api);
 
 eth.prepare()

@@ -33,7 +33,7 @@ function handleTransaction(io, name, tx) {
       } else if (timeout > 0 && new Date().getTime() - start > timeout) {
         io.emit('error', `Transaction ${tx.hash} wasn't processed in ${timeout / 1000} seconds`);
       } else {
-        setTimeout(sendAfterReceipt, 1000);
+        setTimeout(sendAfterReceipt, 200);
       }
     });
   }
