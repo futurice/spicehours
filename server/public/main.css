@@ -1,3 +1,7 @@
+body {
+  background-color: #E8F5F3;
+}
+
 .container {
   margin-left: auto;
   margin-right: auto;
@@ -7,7 +11,6 @@
 .top-bar {
   overflow: hidden;
   position: relative;
-  background-color: #E8F5F3;
 }
 
 .chilicorn-icon {
@@ -16,13 +19,46 @@
   float: left;
 }
 
+.top-content {
+  height: 128px;
+}
+
+#transaction-status > div {
+  background-color: #A5D6A7;
+  border-radius: 10px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+}
+
+@keyframes pending-blinker {
+  50% { opacity: 0.7; }
+}
+
+#transaction-status > div.pending {
+  background-color: #EF5350;
+  animation: pending-blinker 2s linear infinite;
+}
+
+#transaction-status > div.loading {
+  background-color: #FFF59D;
+}
+
 #main-content {
   position: absolute;
-  top: 128px;
+  top: 160px;
   left: 0;
   right: 0;
   bottom: 0;
   overflow: hidden;
   overflow-y: scroll;
-  background-color: #E8F5F3;
+}
+
+#event-list {
+  padding-top: 10px;
+}
+
+#event-list li {
+  padding: 15px;
+  border-bottom: 1px a;
 }

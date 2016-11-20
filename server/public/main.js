@@ -29,6 +29,22 @@
     }
   });
 
+  var TxPending = React.createClass({
+    propTypes: {
+      transactions: React.PropTypes.object.isRequired
+    },
+    render: function() {
+      var txCount = Object.keys(this.props.transactions).length;
+      if (txCount > 0) {
+        return React.createElement('div', { className: 'pending' },
+          txCount + ' transactions pending, please wait');
+      } else {
+        return React.createElement('div', {},
+          'No transactions pending, everything up-to-date');
+      }
+    }
+  });
+
   function eventComparator(a, b) {
     if (a.blockNumber != b.blockNumber) {
       return (a.blockNumber - b.blockNumber);
@@ -41,14 +57,11 @@
   }
 
   function addHoursEvent(event) {
-    // First remove all duplicate events from hoursEvents array
-    hoursEvents = hoursEvents.filter(function(oldEvent) {
-      return (
-        oldEvent.event !== event.event ||
-        oldEvent.transactionHash !== event.transactionHash ||
-        JSON.stringify(oldEvent.args) !== JSON.stringify(oldEvent.args)
-      );
-    });
+    for (var i = 0; i < hoursEvents.length; i++) {
+      if (eventId(hoursEvents[i]) === eventId(event)) {
+        return;
+      }
+    }
     hoursEvents.push(event);
     hoursEvents.sort(eventComparator);
   }
@@ -68,26 +81,12 @@
     });
   }
 
+
   function updateEventList() {
     var eventList = React.createElement(EventList, { events: hoursEvents });
-    ReactDOM.render(eventList, document.getElementById('main-content'));
-/*
-    var $listEl = $('ul.list-group');
-    var $events = hoursEvents.map(function(event) {
-      if (event.event === 'MarkHours') {
-        var eventInfo = '';
-        eventInfo += 'Marking from ' + event.args.info;
-        eventInfo += ' description ' + event.args.description;
-        eventInfo += ' duration ' + event.args.duration;
-        return $('<li>').addClass('list-group-item').text(eventInfo);
-      }
-    });
-    $listEl.empty().append($events);
-    var pendingLength = Object.keys(hoursPending).length;
-    if (pendingLength > 0) {
-      $listEl.append($('<li>').addClass('list-group-item').text(pendingLength + ' transactions pending'));
-    }
-*/
+    ReactDOM.render(eventList, document.getElementById('event-list'));
+    var txPending = React.createElement(TxPending, { transactions: hoursPending });
+    ReactDOM.render(txPending, document.getElementById('transaction-status'));
   }
 
   fetchInitial();
