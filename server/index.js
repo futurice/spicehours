@@ -1,13 +1,13 @@
-var express = require('express');
-var http = require('http');
-var bodyParser = require('body-parser');
-var eth = require('./eth');
-var eventapi = require('./eventapi');
-var api = require('./api');
+const express = require('express');
+const http = require('http');
+const bodyParser = require('body-parser');
+const eth = require('./eth');
+const eventapi = require('./eventapi');
+const api = require('./api');
 
-var app = express();
-var server = http.Server(app);
-var io = require('socket.io')(server);
+const app = express();
+const server = http.Server(app);
+const io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
