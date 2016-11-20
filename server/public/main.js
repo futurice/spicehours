@@ -89,6 +89,15 @@
     ReactDOM.render(txPending, document.getElementById('transaction-status'));
   }
 
+  var spinIcon = _.throttle(function() {
+    var icon = document.getElementById('chilicorn-icon');
+    icon.className = 'spin';
+    setTimeout(function() {
+      icon.className = '';
+    }, 600);
+    
+  }, 1000, {trailing: false});
+
   fetchInitial();
 
   document.getElementById('send-button').onclick = function() {
@@ -133,5 +142,6 @@
     const event = JSON.parse(msg);
     addHoursEvent(event);
     updateEventList();
+    spinIcon();
   });
 })();

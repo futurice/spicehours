@@ -8,7 +8,7 @@
     <div class="top-bar">
       <div class="container">
         <div class="top-content">
-          <img src="chilicorn_no_text-256.png" alt="Chilicorn" class="chilicorn-icon">
+          <img id="chilicorn-icon" src="chilicorn_no_text-256.png" alt="Chilicorn">
           <input type="number" step="any" class="form-control" aria-label="Number of hours">
           <input type="text" class="form-control" aria-label="Description link">
           <button id="send-button" type="button">Send</button>
@@ -24,6 +24,7 @@
       </div>
     </div>
 
+    <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="https://unpkg.com/react@15/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>

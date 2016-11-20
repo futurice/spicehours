@@ -13,10 +13,18 @@ body {
   position: relative;
 }
 
-.chilicorn-icon {
+#chilicorn-icon {
   width: 128px;
   height: 128px;
   float: left;
+}
+
+@keyframes spin {
+  100% { transform:rotate(-360deg); }
+}
+
+#chilicorn-icon.spin {
+  animation: spin 0.5s linear;
 }
 
 .top-content {
