@@ -10,6 +10,10 @@
     return (a.logIndex - b.logIndex);
   }
 
+  function eventId(e) {
+    return e.blockHash + ':' + e.logIndex;
+  }
+
   function addHoursEvent(event) {
     // First remove all duplicate events from hoursEvents array
     hoursEvents = hoursEvents.filter(function(oldEvent) {
@@ -24,13 +28,13 @@
   }
 
   function fetchInitial() {
-    $.getJSON('/api/hours/events', function(data) {
+    getJSON('/api/hours/events', function(err, data) {
       data.forEach(function(event) {
         addHoursEvent(event);
       });
       updateEventList();
     });
-    $.getJSON('/api/hours/pending', function(data) {
+    getJSON('/api/hours/pending', function(err, data) {
       data.forEach(function(tx) {
         hoursPending[tx.hash] = tx;
       });
@@ -39,6 +43,7 @@
   }
 
   function updateEventList() {
+/*
     var $listEl = $('ul.list-group');
     var $events = hoursEvents.map(function(event) {
       if (event.event === 'MarkHours') {
@@ -54,59 +59,44 @@
     if (pendingLength > 0) {
       $listEl.append($('<li>').addClass('list-group-item').text(pendingLength + ' transactions pending'));
     }
+*/
   }
 
-  $(document).ready(function() {
-    fetchInitial();
-    $('button').click(function(event) {
-      var data = {
-        description: 'foobar',
-        duration: 3600
-      };
-      $.ajax({
-        type: 'POST',
-        url: '/api/hours/jvah',
-        data: JSON.stringify(data),
-        dataType: 'json',
-        contentType: 'application/json',
-        processData: false
-      });
-    });
+  fetchInitial();
 
-    var socket = io();
-    socket.on('block', function(msg) {
-      console.log('block: ' + msg);
-    });
-    socket.on('rates/pending', function(msg) {
-      console.log('rates pending: ' + msg);
-      const tx = JSON.parse(msg);
-      ratesPending[tx.hash] = tx;
-    });
-    socket.on('rates/tx', function(msg) {
-      console.log('rates tx: ' + msg);
-      const tx = JSON.parse(msg);
-      delete ratesPending[tx.hash];
-    });
-    socket.on('hours/pending', function(msg) {
-      console.log('hours pending: ' + msg);
-      const tx = JSON.parse(msg);
-      hoursPending[tx.hash] = tx;
-      updateEventList();
-    });
-    socket.on('hours/tx', function(msg) {
-      console.log('hours tx: ' + msg);
-      const tx = JSON.parse(msg);
-      delete hoursPending[tx.hash];
-      updateEventList();
-    });
-    socket.on('hours/receipt', function(msg) {
-      console.log('hours receipt: ' + msg);
-    });
-    socket.on('hours/event', function(msg) {
-      console.log('hours event: ' + msg);
-      const event = JSON.parse(msg);
-      addHoursEvent(event);
-      updateEventList();
-    });
+  var socket = io();
+  socket.on('block', function(msg) {
+    console.log('block: ' + msg);
+  });
+  socket.on('rates/pending', function(msg) {
+    console.log('rates pending: ' + msg);
+    const tx = JSON.parse(msg);
+    ratesPending[tx.hash] = tx;
+  });
+  socket.on('rates/tx', function(msg) {
+    console.log('rates tx: ' + msg);
+    const tx = JSON.parse(msg);
+    delete ratesPending[tx.hash];
+  });
+  socket.on('hours/pending', function(msg) {
+    console.log('hours pending: ' + msg);
+    const tx = JSON.parse(msg);
+    hoursPending[tx.hash] = tx;
+    updateEventList();
+  });
+  socket.on('hours/tx', function(msg) {
+    console.log('hours tx: ' + msg);
+    const tx = JSON.parse(msg);
+    delete hoursPending[tx.hash];
+    updateEventList();
+  });
+  socket.on('hours/receipt', function(msg) {
+    console.log('hours receipt: ' + msg);
+  });
+  socket.on('hours/event', function(msg) {
+    console.log('hours event: ' + msg);
+    const event = JSON.parse(msg);
+    addHoursEvent(event);
+    updateEventList();
   });
 })();
