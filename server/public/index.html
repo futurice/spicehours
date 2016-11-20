@@ -1,15 +1,22 @@
 <html lang="en">
   <head>
     <title>Hello World</title>
+    <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="main.css">
   </head>
   <body>
-    Hello World!
-    <ul class="list-group">
-    </ul>
-    <input type="number" step="any" class="form-control" aria-label="Number of hours">
-    <input type="text" class="form-control" aria-label="Description link">
-    <button class="btn btn-default" type="button">Send</button>
+    <div class="top-bar">
+      <div class="container">
+        <img src="chilicorn_no_text-256.png" alt="Chilicorn" class="chilicorn-icon">
+        <input type="number" step="any" class="form-control" aria-label="Number of hours">
+        <input type="text" class="form-control" aria-label="Description link">
+        <button class="btn btn-default" type="button">Send</button>
+      </div>
+    </div>
+    <div id="main-content">
+      <div class="container">
+      </div>
+    </div>
 
     <script src="https://unpkg.com/react@15/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>

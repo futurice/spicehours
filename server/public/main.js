@@ -3,6 +3,32 @@
   var hoursPending = {};
   var ratesPending = {};
 
+  var EventItem = React.createClass({
+    propTypes: {
+      event: React.PropTypes.object.isRequired
+    },
+    render: function() {
+      var event = this.props.event;
+      return React.createElement('li', { key: eventId(this.props.event) },
+        'Marking from ' + event.args.info +
+        ' description ' + event.args.description +
+        ' duration ' + event.args.duration
+      );
+    }
+  });
+
+  var EventList = React.createClass({
+    propTypes: {
+      events: React.PropTypes.array.isRequired
+    },
+    render: function() {
+      var children = this.props.events.map(function(event) {
+        return React.createElement(EventItem, { event: event });
+      });
+      return React.createElement.apply(this, ['ul', {}].concat(children));
+    }
+  });
+
   function eventComparator(a, b) {
     if (a.blockNumber != b.blockNumber) {
       return (a.blockNumber - b.blockNumber);
@@ -43,6 +69,8 @@
   }
 
   function updateEventList() {
+    var eventList = React.createElement(EventList, { events: hoursEvents });
+    ReactDOM.render(eventList, document.getElementById('main-content'));
 /*
     var $listEl = $('ul.list-group');
     var $events = hoursEvents.map(function(event) {
