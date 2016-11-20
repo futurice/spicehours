@@ -6,9 +6,9 @@
         if (xhr.status === 200) {
           callback(null, JSON.parse(xhr.responseText));
         } else if (xhr.status === 204) {
-          callback(null);
+          if (callback) callback(null);
         } else {
-          callback(new Error('Server returned ' + xhr.status));
+          if (callback) callback(new Error('Server returned ' + xhr.status));
         }
       }
     }

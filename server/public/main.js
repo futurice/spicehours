@@ -46,10 +46,10 @@
   });
 
   function eventComparator(a, b) {
-    if (a.blockNumber != b.blockNumber) {
-      return (a.blockNumber - b.blockNumber);
+    if (b.blockNumber != a.blockNumber) {
+      return (b.blockNumber - a.blockNumber);
     }
-    return (a.logIndex - b.logIndex);
+    return (b.logIndex - a.logIndex);
   }
 
   function eventId(e) {
@@ -58,6 +58,7 @@
 
   function addHoursEvent(event) {
     for (var i = 0; i < hoursEvents.length; i++) {
+      // If event already exists, do not re-add it
       if (eventId(hoursEvents[i]) === eventId(event)) {
         return;
       }
@@ -81,7 +82,6 @@
     });
   }
 
-
   function updateEventList() {
     var eventList = React.createElement(EventList, { events: hoursEvents });
     ReactDOM.render(eventList, document.getElementById('event-list'));
@@ -90,6 +90,14 @@
   }
 
   fetchInitial();
+
+  document.getElementById('send-button').onclick = function() {
+    var data = {
+      description: 'foobar',
+      duration: 3600
+    };
+    postJSON('/api/hours/jvah', data);
+  };
 
   var socket = io();
   socket.on('block', function(msg) {
