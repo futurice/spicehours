@@ -1,6 +1,7 @@
 (function() {
   var hoursEvents = [];
   var hoursPending = {};
+  var ratesPending = {};
 
   function eventComparator(a, b) {
     if (a.blockNumber != b.blockNumber) {
@@ -75,6 +76,16 @@
     var socket = io();
     socket.on('block', function(msg) {
       console.log('block: ' + msg);
+    });
+    socket.on('rates/pending', function(msg) {
+      console.log('rates pending: ' + msg);
+      const tx = JSON.parse(msg);
+      ratesPending[tx.hash] = tx;
+    });
+    socket.on('rates/tx', function(msg) {
+      console.log('rates tx: ' + msg);
+      const tx = JSON.parse(msg);
+      delete ratesPending[tx.hash];
     });
     socket.on('hours/pending', function(msg) {
       console.log('hours pending: ' + msg);
