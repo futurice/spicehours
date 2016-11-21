@@ -6,8 +6,8 @@ import "SpicePayroll.sol";
 contract SpiceHours is SpiceControlled {
     address[] public payrolls;
 
-    event MarkHours(address indexed sender, bytes32 indexed info, bytes32 indexed description, int duration);
-    event ProcessPayroll(address indexed sender, address indexed payroll, uint maxDuration);
+    event MarkHours(bytes32 indexed info, bytes32 indexed description, int duration, bool success);
+    event ProcessPayroll(address indexed payroll, uint maxDuration);
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         payrolls[payrolls.length++] = new SpicePayroll(members);
@@ -17,13 +17,14 @@ contract SpiceHours is SpiceControlled {
         if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
 
         SpicePayroll payroll = SpicePayroll(payrolls[payrolls.length-1]);
-        payroll.addMarking(_info, _description, _duration);
-        MarkHours(msg.sender, _info, _description, _duration);
+        bool success = payroll.addMarking(_info, _description, _duration);
+        MarkHours(_info, _description, _duration, success);
     }
 
     function processPayroll(address _calculator, uint _maxDuration) onlyDirector {
         SpicePayroll payroll = SpicePayroll(payrolls[payrolls.length-1]);
         payroll.processMarkings(_calculator, _maxDuration);
+        ProcessPayroll(payroll, _maxDuration);
 
         payrolls[payrolls.length++] = new SpicePayroll(members);
     }

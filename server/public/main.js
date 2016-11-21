@@ -12,10 +12,11 @@
     },
     render: function() {
       var event = this.props.event;
-      return React.createElement('li', { key: eventId(this.props.event) },
+      return React.createElement('li', { key: eventId(event) },
         'Marking from ' + event.args.info +
         ' description ' + event.args.description +
-        ' duration ' + event.args.duration
+        ' duration ' + event.args.duration +
+        (event.args.success ? '' : ' FAILED')
       );
     }
   });

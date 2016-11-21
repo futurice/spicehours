@@ -57,13 +57,13 @@ contract SpicePayroll is SpiceControlled {
         NewPayroll(msg.sender);
     }
 
-    function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed {
+    function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed returns(bool) {
         if (_duration == 0) throw;
         if (_info == 0) throw;
 
         if (_duration < 0 && entries[_info].duration < uint(-_duration)) {
           FailedMarking(_info, _description, entries[_info].duration, _duration);
-          return;
+          return false;
         }
 
         // If not avalable, add to infos to make iterable
@@ -77,7 +77,9 @@ contract SpicePayroll is SpiceControlled {
         } else {
             entries[_info].duration += uint(_duration);
         }
+
         AddMarking(_info, _description, _duration, entries[_info].duration);
+        return true;
     }
 
     function processMarkings(address _calculator, uint _maxDuration) onlyCreator onlyUnprocessed {
