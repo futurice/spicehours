@@ -23,7 +23,8 @@ contract SpicePayroll is SpiceControlled {
     bool locked;
 
     event NewPayroll(address indexed creator);
-    event AddMarking(bytes32 indexed info, bytes32 indexed description, int duration);
+    event FailedMarking(bytes32 indexed info, bytes32 indexed description, uint total, int duration);
+    event AddMarking(bytes32 indexed info, bytes32 indexed description, int duration, uint total);
     event ProcessMarkings(bytes32 indexed info, uint total, uint duration, uint payout);
     event AllMarkingsProcessed(address indexed calculator, uint maxDuration, uint fromBlock, uint toBlock);
 
@@ -57,9 +58,13 @@ contract SpicePayroll is SpiceControlled {
     }
 
     function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed {
-        if (_duration < 0 && entries[_info].duration < uint(-_duration)) throw;
         if (_duration == 0) throw;
         if (_info == 0) throw;
+
+        if (_duration < 0 && entries[_info].duration < uint(-_duration)) {
+          FailedMarking(_info, _description, entries[_info].duration, _duration);
+          return;
+        }
 
         // If not avalable, add to infos to make iterable
         if (!entries[_info].available) {
@@ -72,7 +77,7 @@ contract SpicePayroll is SpiceControlled {
         } else {
             entries[_info].duration += uint(_duration);
         }
-        AddMarking(_info, _description, _duration);
+        AddMarking(_info, _description, _duration, entries[_info].duration);
     }
 
     function processMarkings(address _calculator, uint _maxDuration) onlyCreator onlyUnprocessed {
