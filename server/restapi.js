@@ -2,6 +2,7 @@ const _ = require('lodash/fp');
 const express = require('express');
 const eth = require('./eth');
 const utils = require('./utils');
+const common = require('./common');
 const eventapi = require('./eventapi');
 
 const router = express.Router();
@@ -168,7 +169,7 @@ router.get('/hours/events', (req, res, next) => {
   const fromBlock = 0;
   const hours = SpiceHours.deployed();
   getEvents(hours.allEvents, { fromBlock })
-    .then(events => Promise.all(_.map(processEvent, events)))
+    .then(events => Promise.all(_.map(common.processEvent, events)))
     .then(events => res.json(events))
     .catch(next);
 });

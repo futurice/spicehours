@@ -1,5 +1,6 @@
 const socketio = require('socket.io');
 const AllEvents = require('web3/lib/web3/allevents');
+const common = require('./common');
 const utils = require('./utils');
 const eth = require('./eth');
 
@@ -16,7 +17,7 @@ function handleBlock(io, block) {
   io.emit('block', JSON.stringify(block));
 }
 
-function handleLog(io, contracts, data, proc) {
+function handleLog(io, contracts, data) {
   const contractInfo = findContract(contracts, data.address);
   if (!contractInfo) return;
   const [name, contract] = contractInfo;
@@ -26,8 +27,10 @@ function handleLog(io, contracts, data, proc) {
   const all = new AllEvents(web3._requestManager, events, contract.address);
   const decoded = all.decode(data);
 
-  const event = proc ? proc(decoded) : decoded;
-  io.emit(name + '/event', JSON.stringify(event));
+  common.processEvent(decoded)
+    .then(event => {
+      io.emit(name + '/event', JSON.stringify(event));
+    });
 }
 
 function handleTransactionReceipt(io, contracts, receipt, proc) {

@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
 const eth = require('./eth');
 const eventapi = require('./eventapi');
-const api = require('./api');
+const restapi = require('./restapi');
 
 const app = express();
 const server = http.Server(app);
@@ -16,7 +16,7 @@ app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
-app.use('/api/', api);
+app.use('/api/', restapi);
 
 app.get('/', (req, res) => {
   res.render('home');
