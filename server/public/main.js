@@ -1,4 +1,5 @@
 (function() {
+  var latestBlock;
   var hoursEvents = [];
   var hoursPending = {};
   var ratesPending = {};
@@ -19,10 +20,14 @@
       var descr = urlRegex.test(event.args.description)
         ? React.createElement('a', { href: event.args.description }, event.args.description)
         : event.args.description;
+      var confirm = (latestBlock && event.block) ? ' ' + (latestBlock - event.block.number) + ' confirmations' : null;
       if (event.event === 'MarkHours') {
         return React.createElement('li', { key: eventId(event) },
-          date + ' ' + name + ' marked ' + moment.duration(event.args.duration*1000).humanize() + ' to project ', descr,
-          (event.args.success ? '' : ' FAILED')
+          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
+          React.createElement('div', {},
+            name + ' marked ' + moment.duration(event.args.duration*1000).humanize() + ' to project ', descr,
+            (event.args.success ? '' : ' FAILED')
+          )
         );
       } else if (event.event === 'ProcessPayroll') {
         return React.createElement('li', { key: eventId(event) },
@@ -195,6 +200,7 @@
   var socket = io();
   socket.on('block', function(msg) {
     console.log('block: ' + msg);
+    latestBlock = JSON.parse(msg).number;
   });
   socket.on('rates/pending', function(msg) {
     console.log('rates pending: ' + msg);

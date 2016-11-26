@@ -84,5 +84,9 @@ body {
 
 #event-list li {
   padding: 15px;
-  border-bottom: 1px a;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+#event-list li *:first-child {
+  margin-bottom: 10px;
 }
