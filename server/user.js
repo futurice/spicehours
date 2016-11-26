@@ -5,16 +5,18 @@ const config = require('./config');
 if (!config.FUM_TOKEN || !config.FUM_BASEURL) {
   throw new Error('No FUM token or host set in config');
 }
-axios.defaults.baseURL = config.FUM_BASEURL;
-axios.defaults.headers.common['Authorization'] = `Token ${config.FUM_TOKEN}`;
+const client = axios.create({
+  baseURL: config.FUM_BASEURL,
+  headers: { 'Authorization': `Token ${config.FUM_TOKEN}` }
+});
 
 function isFUMUser(username) {
-  return axios.get(`/users/${username}/`)
+  return client.get(`/users/${username}/`)
     .then(() => true, () => false);
 }
 
 function getFUMUser(username) {
-  return axios.get(`/users/${username}/`)
+  return client.get(`/users/${username}/`)
     .then(res => _.pick([
       'id',
       'username',
