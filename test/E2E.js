@@ -31,7 +31,8 @@ contract("E2E", function(accounts) {
       .then(() => getTransaction(() => hours.markHours(outsiderInfo1, 0, 144000, {from: director})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, 5400, {from: owner})))
       .then(() => getTransaction(() => hours.markHours(outsiderInfo2, 0, -400, {from: owner})))
-      .then(() => hours.currentPayroll())
+      .then(() => hours.payrollCount())
+      .then(count => hours.payrolls(count.valueOf()-1))
       .then(payrollAddress => {
         const payroll = SpicePayroll.at(payrollAddress);
         return Promise.all([
