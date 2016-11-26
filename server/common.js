@@ -1,4 +1,5 @@
 const winston = require('winston');
+const Bitly = require('bitly');
 const utils = require('./utils');
 const web3 = require('./eth').web3;
 const fum = require('./fum');

@@ -28,6 +28,7 @@
   "homepage": "https://github.com/jvah/spicehours#readme",
   "dependencies": {
     "axios": "0.15.2",
+    "bitly": "^4.1.1",
     "body-parser": "1.15.2",
     "express": "4.14.0",
     "express-handlebars": "3.0.0",

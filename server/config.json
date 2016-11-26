@@ -3,6 +3,7 @@
   "RPC_PORT": 8545,
 
   "SECRET": "jpLHCCvYF0FNXkpXKfLmS7XQcOEzFhzH0f9kL1YV8YFSdIXPAArWWrRtpliILqsH",
+  "BITLY_TOKEN": <token>,
   "FUM_TOKEN": <token>,
   "FUM_BASEURL": <url>
 }
