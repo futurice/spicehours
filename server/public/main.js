@@ -31,7 +31,21 @@
         );
       } else if (event.event === 'ProcessPayroll') {
         return React.createElement('li', { key: eventId(event) },
-          date + ' Payroll was processed, started new payroll'
+          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
+          React.createElement('div', {},
+            'Processed ',
+            React.createElement('a', { href: '/payrolls/' + event.args.payroll }, 'payroll'),
+            ' capping all markings to ' + (event.args.maxDuration / 3600) + ' hours'
+          )
+        );
+      } else if (event.event === 'CreatePayroll') {
+        return React.createElement('li', { key: eventId(event) },
+          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
+          React.createElement('div', {},
+            'Created new ',
+            React.createElement('a', { href: '/payrolls/' + event.args.payroll }, 'payroll'),
+            ' for hour markings'
+          )
         );
       } else {
         return React.createElement('li', { key: eventId(event) },

@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>Payroll</title>
+  </head>
+  <body>
+    Payroll processed: {{payroll.processed}}, locked: {{payroll.locked}}
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>HR-number</th>
+          <th>Name</th>
+          <th>Duration (seconds)</th>
+          <th>Payout (1/million euros)</th>
+        <tr>
+      <thead>
+      <tbody>
+        {{#each payroll.entries as |entry|}}
+          <tr>
+            <td>{{@key}}</td>
+            {{#with entry.user as |user|}}
+              <td>{{user.hr_number}}</td>
+              <td>{{user.first_name}} {{user.last_name}}</td>
+            {{else}}
+              <td></td>
+              <td></td>
+            {{/with}}
+            <td>{{entry.duration}}</td>
+            <td>{{entry.payout}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </body>
+</html>

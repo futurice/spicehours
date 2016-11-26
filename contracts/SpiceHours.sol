@@ -8,6 +8,7 @@ contract SpiceHours is SpiceControlled {
 
     event MarkHours(bytes32 indexed info, bytes32 indexed description, int duration, bool success);
     event ProcessPayroll(address indexed payroll, uint maxDuration);
+    event CreatePayroll(address indexed payroll);
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         payrolls[payrolls.length++] = new SpicePayroll(members);
@@ -27,6 +28,7 @@ contract SpiceHours is SpiceControlled {
         ProcessPayroll(payroll, _maxDuration);
 
         payrolls[payrolls.length++] = new SpicePayroll(members);
+        CreatePayroll(payrolls[payrolls.length-1]);
     }
 
     function hasPayroll(address _address) constant returns (bool) {
