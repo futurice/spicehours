@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use('/api/', restapi);
 
 app.get('/', (req, res) => {
-  res.render('home');
+  res.render('hours');
 });
 
 eth.prepare()

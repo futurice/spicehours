@@ -12,12 +12,21 @@
     },
     render: function() {
       var event = this.props.event;
-      return React.createElement('li', { key: eventId(event) },
-        'Marking from ' + event.args.info +
-        ' description ' + event.args.description +
-        ' duration ' + event.args.duration +
-        (event.args.success ? '' : ' FAILED')
-      );
+      var name = (event.user ? event.user.first_name + ' ' + event.user.last_name : event.args.info);
+      if (event.event === 'MarkHours') {
+        return React.createElement('li', { key: eventId(event) },
+          name + ' marked ' + moment.duration(event.args.duration*1000).humanize() + ' to project ' + event.args.description +
+          (event.args.success ? '' : ' FAILED')
+        );
+      } else if (event.event === 'ProcessPayroll') {
+        return React.createElement('li', { key: eventId(event) },
+          'Payroll was processed, started new payroll'
+        );
+      } else {
+        return React.createElement('li', { key: eventId(event) },
+          'Unknown event ' + event.event
+        );
+      }
     }
   });
 
