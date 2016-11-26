@@ -3,6 +3,7 @@ const express = require('express');
 const eth = require('./eth');
 const utils = require('./utils');
 const common = require('./common');
+const bitly = require('./bitly');
 const eventapi = require('./eventapi');
 
 const router = express.Router();
@@ -109,14 +110,26 @@ router.post('/hours/:info', (req, res, next) => {
     return res.status(400).json(errorJson('Bad Request'));
 
   const info = utils.encryptInfo(req.params.info);
-  const descr = utils.strToBytes32(req.body.description);
   const duration = req.body.duration;
+  let descr = utils.strToBytes32(req.body.description);
 
   const hours = SpiceHours.deployed();
-  handleTransaction(hours.markHours, info, descr, duration)
-    .then(function(txid) {
-      res.status(204).send();
-    }).catch(next);
+  Promise.resolve()
+    .then(() => {
+      if (common.urlRegex.test(req.body.description)) {
+        return bitly.shortenURL(req.body.description)
+          .then(shortUrl => descr = shortUrl)
+          .catch(err => winston.warn(`URL shortening failed: ${err.message}`));
+      } else {
+        return Promise.resolve();
+      }
+    })
+    .then(() => {
+      return handleTransaction(hours.markHours, info, descr, duration)
+        .then(function(txid) {
+          res.status(204).send();
+        }).catch(next);
+    });
 });
 
 router.get('/hours/balances', (req, res, next) => {
