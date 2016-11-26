@@ -27,11 +27,12 @@
   },
   "homepage": "https://github.com/jvah/spicehours#readme",
   "dependencies": {
+    "axios": "0.15.2",
     "body-parser": "1.15.2",
     "express": "4.14.0",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "3.0.0",
     "lodash": "4.16.6",
-    "socket.io": "^1.5.1",
+    "socket.io": "1.5.1",
     "web3": "0.16.0"
   },
   "devDependencies": {
