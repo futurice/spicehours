@@ -29,8 +29,11 @@ contract SpiceHours is SpiceControlled {
         payrolls[payrolls.length++] = new SpicePayroll(members);
     }
 
-    function currentPayroll() constant returns (address) {
-        return payrolls[payrolls.length-1];
+    function hasPayroll(address _address) constant returns (bool) {
+        for (uint i; i < payrolls.length; i++) {
+            if (payrolls[i] == _address) return true;
+        }
+        return false;
     }
 
     function payrollCount() constant returns (uint) {

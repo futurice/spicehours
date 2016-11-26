@@ -53,5 +53,13 @@ function processEvent(event) {
     .then(() => event);
 }
 
+function processPayrollEntry(info, entry) {
+  return fum.getUser(info)
+    .then(user => entry.user = user)
+    .catch(err => winston.warn(`Could not find user ${event.args.info}: ${err.message}`))
+    .then(() => entry);
+}
+
 exports.urlRegex = urlRegex;
 exports.processEvent = processEvent;
+exports.processPayrollEntry = processPayrollEntry;

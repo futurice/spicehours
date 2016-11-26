@@ -11,6 +11,7 @@ const web3 = eth.web3;
 const contracts = eth.contracts;
 const SpiceMembers = contracts.SpiceMembers;
 const SpiceHours = contracts.SpiceHours;
+const SpicePayroll = contracts.SpicePayroll;
 
 const LEVEL_OWNER = 'Owner';
 function levelName(level) {
@@ -132,20 +133,6 @@ router.post('/hours/:info', (req, res, next) => {
     });
 });
 
-router.get('/hours/balances', (req, res, next) => {
-  const hours = SpiceHours.deployed();
-  hours.infoCount()
-    .then(count =>
-      Promise.all(_.map(idx => hours.infos(idx), _.range(0, count.toNumber())))
-    )
-    .then(infos =>
-      Promise.all(_.map(info => hours.balance(info), infos))
-        .then(_.zipObject(_.map(utils.decryptInfo, infos)))
-    )
-    .then(balances => res.json(balances))
-    .catch(next);
-});
-
 function errorJson(err) {
   if (_.isError(err)) {
     return { error: err.message.split('\n')[0] };
@@ -201,6 +188,72 @@ router.get('/hours/:info/events', (req, res, next) => {
   .then(events => Promise.all(_.map(processEvent, events)))
   .then(events => res.json(events))
   .catch(err => next(err));
+});
+
+router.get('/hours/payrolls', (req, res, next) => {
+  const hours = SpiceHours.deployed();
+  hours.payrollCount()
+    .then(count =>
+      Promise.all(_.range(0, count).map(i => hours.payrolls(i)))
+    )
+    .then(events => res.json(events))
+    .catch(err => next(err));
+});
+
+function getPayrollEntries(payrollAddress, processed) {
+  const payroll = SpicePayroll.at(payrollAddress);
+  return payroll.entryCount()
+    .then(entryCount =>
+      Promise.all(_.range(0, entryCount).map(i => payroll.entryInfo(i)))
+    )
+    .then(infos => {
+      const entries = {};
+      return Promise.all(
+        infos.map(info => {
+          const decrypted = utils.decryptInfo(info);
+          return Promise.resolve()
+            .then(() => entries[decrypted] = {})
+            .then(() => payroll.duration(info))
+            .then(duration => entries[decrypted].duration = duration)
+            .then(() => {
+              if (processed) {
+                return payroll.payout(info)
+                  .then(payout => entries[decrypted].payout = payout);
+              } else {
+                return Promise.resolve();
+              }
+            })
+            .then(() => common.processPayrollEntry(decrypted, entries[decrypted]))
+            .then(entry => entries[decrypted] = entry);
+        })
+      ).then(() => entries);
+    })
+}
+
+router.get('/payrolls/:address', (req, res, next) => {
+  const hours = SpiceHours.deployed();
+  const payroll = SpicePayroll.at(req.params.address);
+  hours.hasPayroll(payroll.address)
+    .then(hasPayroll => {
+      if (!hasPayroll) return res.status(404).send(errorJson('Not Found'));
+
+      const payrollObj = {};
+      return Promise.resolve()
+        .then(() => payroll.locked())
+        .then(locked => payrollObj.locked = locked)
+        .then(() => payroll.processed())
+        .then(processed => {
+          payrollObj.processed = processed;
+          return getPayrollEntries(payroll.address, processed)
+        })
+        .then(entries => payrollObj.entries = entries)
+        .then(() => payroll.fromBlock())
+        .then(fromBlock => getEvents(payroll.allEvents, { fromBlock }))
+        .then(events => Promise.all(_.map(common.processEvent, events)))
+        .then(events => payrollObj.events = events)
+        .then(() => res.json(payrollObj));
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;

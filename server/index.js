@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const exphbs = require('express-handlebars');
 const eth = require('./eth');
 const eventapi = require('./eventapi');
@@ -16,6 +17,7 @@ app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use('/api/', restapi);
 
 app.get('/', (req, res) => {

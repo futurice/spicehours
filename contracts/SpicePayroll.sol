@@ -20,7 +20,7 @@ contract SpicePayroll is SpiceControlled {
     bytes32[] public infos;
 
     address calculator;
-    bool locked;
+    bool public locked;
 
     event NewPayroll(address indexed creator);
     event FailedMarking(bytes32 indexed info, bytes32 indexed description, uint total, int duration);
@@ -117,6 +117,10 @@ contract SpicePayroll is SpiceControlled {
     function unlock() onlyOwner {
         locked = false;
         SetPayrollLocked(locked);
+    }
+
+    function processed() constant returns (bool) {
+        return (calculator != 0);
     }
 
     function duration(bytes32 _info) constant returns (uint) {
