@@ -2,7 +2,7 @@ const winston = require('winston');
 const Bitly = require('bitly');
 const utils = require('./utils');
 const web3 = require('./eth').web3;
-const fum = require('./fum');
+const user = require('./user');
 
 // See https://gist.github.com/dperini/729294
 const urlRegex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i
@@ -43,7 +43,7 @@ function processEvent(event) {
           return Promise.resolve();
         }
 
-        return fum.getUser(event.args.info)
+        return user.getUser(event.args.info)
           .then(user => event.user = user)
           .catch(err => winston.warn(`Could not find user ${event.args.info}: ${err.message}`));
       } else {
@@ -54,7 +54,7 @@ function processEvent(event) {
 }
 
 function processPayrollEntry(info, entry) {
-  return fum.getUser(info)
+  return user.getUser(info)
     .then(user => entry.user = user)
     .catch(err => winston.warn(`Could not find user ${event.args.info}: ${err.message}`))
     .then(() => entry);
