@@ -106,11 +106,13 @@ function getEvents(event, ...args) {
   });
 }
 
-router.post('/hours/:info', (req, res, next) => {
+router.post('/hours/', (req, res, next) => {
   if (!_.isNumber(req.body.duration))
     return res.status(400).json(errorJson('Bad Request'));
+  if (!req.pubtkt.uid)
+    return res.status(400).json(errorJson('Bad Request'));
 
-  const info = utils.encryptInfo(req.params.info);
+  const info = utils.encryptInfo(req.pubtkt.uid);
   const duration = req.body.duration;
   let descr = utils.strToBytes32(req.body.description);
 
@@ -142,6 +144,7 @@ function errorJson(err) {
 }
 
 router.get('/block/:id(0x[0-9a-f]{64}|latest)', (req, res, next) => {
+  console.log(req.cookies);
   web3.eth.getBlock(req.params.id, (err, block) => {
     if (err) res.status(404).json(errorJson(err));
     res.json(block);

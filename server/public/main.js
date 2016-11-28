@@ -59,7 +59,7 @@
 
   function updateEventList() {
     var hoursForm = React.createElement(HoursForm, {
-      sendCallback: function(obj) { postJSON('/api/hours/jvah', obj); },
+      sendCallback: function(obj) { postJSON('/api/hours/', obj); },
       errorCallback: function(err) { showError(err); }
     });
     ReactDOM.render(hoursForm, document.getElementById('hours-form'));

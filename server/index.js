@@ -5,9 +5,11 @@ const cookieParser = require('cookie-parser');
 const exphbs = require('express-handlebars');
 const axios = require('axios');
 const winston = require('winston');
+
 const eth = require('./eth');
-const eventapi = require('./eventapi');
+const pubtkt = require('./pubtkt');
 const restapi = require('./restapi');
+const eventapi = require('./eventapi');
 
 const app = express();
 const server = http.Server(app);
@@ -21,6 +23,7 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(pubtkt());
 app.use('/api/', restapi);
 
 // FIXME: Should not be debug in production
