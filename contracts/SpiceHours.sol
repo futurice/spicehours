@@ -12,6 +12,7 @@ contract SpiceHours is SpiceControlled {
 
     function SpiceHours(address _members) SpiceControlled(_members) {
         payrolls[payrolls.length++] = new SpicePayroll(members);
+        CreatePayroll(payrolls[payrolls.length-1]);
     }
 
     function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
