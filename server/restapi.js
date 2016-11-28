@@ -273,19 +273,22 @@ router.get('/rates/', (req, res, next) => {
   const rates = SpiceRates.deployed();
   rates.hourlyRate()
     .then(rate => output.hourlyRate = rate)
+    .then(() => output.entries = {})
     .then(() => rates.entryCount())
     .then(count =>
       Promise.all(_.range(0, count).map(idx => rates.entryInfo(idx)))
     )
-    .then(infos => {
-      const entries = {};
-      return Promise.all(
-        infos.map(info =>
-          rates.unpaidPercentage(info)
-            .then(rate => entries[utils.decryptInfo(info)] = { unpaidPercentage: rate })
-        )
-      ).then(() => output.entries = entries);
-    })
+    .then(infos =>
+      Promise.all(infos.map(info => {
+        console.log(info);
+        const username = utils.decryptInfo(info);
+        output.entries[username] = {};
+        return rates.unpaidPercentage(info)
+          .then(rate => output.entries[username].unpaidPercentage = parseInt(rate, 10))
+          .then(() => user.getUser(username))
+          .then(user => output.entries[username].user = user);
+      }))
+    )
     .then(() => res.json(output))
     .catch(err => next(err));
 });
