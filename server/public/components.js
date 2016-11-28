@@ -5,9 +5,14 @@
   var dateFormatter = new Intl.DateTimeFormat([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric' });
 
   function formatDuration(duration) {
-    var str = Math[duration > 0 ? 'floor' : 'ceil'](duration / 3600) + ' hours';
+    if (!duration) return '0 hours';
+    var str = '';
+    if (Math.floor(duration / 3600) > 0)  {
+      str += Math[duration > 0 ? 'floor' : 'ceil'](duration / 3600) + ' hours';
+    }
     if ((duration % 3600) !== 0) {
-      str += ' ' + Math.round((duration % 3600) / 60) + ' minutes';
+      if (str.length > 0) str += ' ';
+      str += Math.round((duration % 3600) / 60) + ' minutes';
     }
     return str;
   }
@@ -91,6 +96,49 @@
     }
   });
 
+  var TopContent = React.createClass({
+    propTypes: {
+      profile: React.PropTypes.object.isRequired,
+      transactions: React.PropTypes.object.isRequired,
+      error: React.PropTypes.string,
+
+      sendCallback: React.PropTypes.func.isRequired,
+      errorCallback: React.PropTypes.func.isRequired
+    },
+    render: function() {
+      var profile = this.props.profile;
+      var name = profile.user && profile.user.first_name || '';
+      var status = (profile.unpaidPercentage !== undefined && profile.unpaidPercentage !== 0)
+        ? (100 - profile.unpaidPercentage) + '% part-time'
+        : 'full-time';
+      var duration = formatDuration(profile.duration);
+      return React.createElement('div', { className: 'container' },
+        React.createElement('div', { className: 'top-content' },
+          React.createElement('img', {
+            id: 'chilicorn-icon',
+            src: 'chilicorn_no_text-256.png',
+            alt: 'Chilicorn'
+          }),
+          React.createElement(HoursForm, {
+            className: 'hours-form',
+            sendCallback: this.props.sendCallback,
+            errorCallback: this.props.errorCallback
+          }),
+          React.createElement('br'),
+          React.createElement('span', {}, 'Welcome'), ' ' + name, React.createElement('br'),
+          React.createElement('span', {}, 'Your employee status is'), ' ' + status, React.createElement('br'),
+          React.createElement('span', {}, 'This period you have marked'), ' ' + duration, React.createElement('br')
+        ),
+        React.createElement('div', { className: 'tx-status' },
+          React.createElement(StatusBar, {
+            transactions: this.props.transactions,
+            error: this.props.error
+          })
+        )
+      );
+    }
+  });
+
   var HoursForm = React.createClass({
     propTypes: {
       sendCallback: React.PropTypes.func.isRequired,
@@ -129,7 +177,7 @@
       if (!this.isTimeValid()) {
         return this.props.errorCallback(`Invalid time spent for hour marking, must not be zero`);
       }
-      const timeSpent = (this.state.hours > 0)
+      const timeSpent = (this.state.hours >= 0)
         ? (this.state.hours * 3600) + (this.state.minutes * 60)
         : (this.state.hours * 3600) - (this.state.minutes * 60);
       this.props.sendCallback({
@@ -203,8 +251,6 @@
     }
   });
 
-  window.EventItem = EventItem;
   window.EventList = EventList;
-  window.StatusBar = StatusBar;
-  window.HoursForm = HoursForm;
+  window.TopContent = TopContent;
 })();

@@ -20,12 +20,28 @@ body {
 #chilicorn-icon {
   width: 128px;
   height: 128px;
+  margin-right: 20px;
   float: left;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 767px) {
   #chilicorn-icon {
     display: none;
+  }
+  .top-content {
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hours-form label {
+    display: none !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .top-content > span {
+    display: none !important;
   }
 }
 
@@ -39,9 +55,11 @@ body {
 
 .top-content {
   height: 128px;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 
-.top-content > * {
+.top-content > div {
   display: inline-block;
   vertical-align: middle;
 }
@@ -51,14 +69,11 @@ body {
   height: 100%;
 }
 
-#hours-form {
-  float: right;
-}
-
 .hours-form {
   position: relative;
   top: 10px;
   bottom: 10px;
+  float: right;
 }
 
 .hours-form > * {
@@ -114,7 +129,7 @@ body {
   vertical-align: middle;
 }
 
-#transaction-status > div {
+.tx-status > div {
   background-color: #A5D6A7;
   border-radius: 10px;
   height: 32px;
@@ -126,16 +141,16 @@ body {
   50% { background: rgba(239, 83, 80, 0.7); }
 }
 
-#transaction-status > div.error {
+.tx-status > div.error {
   background-color: rgba(239, 83, 80, 1.0);
 }
 
-#transaction-status > div.pending {
+.tx-status > div.pending {
   background-color: rgba(239, 83, 80, 1.0);
   animation: pending-blinker 1.75s linear infinite;
 }
 
-#transaction-status > div.loading {
+.tx-status > div.loading {
   background-color: #FFF59D;
 }
 

@@ -117,8 +117,28 @@ function errorJson(err) {
   }
 }
 
+router.get('/profile', (req, res, next) => {
+ // if (!req.pubtkt || !req.pubtkt.uid)
+   // return res.status(400).json(errorJson('Bad Request'));
+
+  const output = {};
+  const username = /*req.pubtkt.uid*/ 'jvah';
+  const hours = SpiceHours.deployed();
+  const rates = SpiceRates.deployed();
+  user.getUser(username)
+    .then(userObj => output.user = userObj)
+    .then(() => hours.payrollCount())
+    .then(count => hours.payrolls(count.minus(1)))
+    .then(payrollAddress => SpicePayroll.at(payrollAddress))
+    .then(payroll => payroll.duration(utils.encryptInfo(username)))
+    .then(duration => output.duration = duration)
+    .then(() => rates.unpaidPercentage(utils.encryptInfo(username)))
+    .then(unpaid => output.unpaidPercentage = parseInt(unpaid, 10))
+    .then(() => res.json(output))
+    .catch(err => next(err));
+});
+
 router.get('/block/:id(0x[0-9a-f]{64}|latest)', (req, res, next) => {
-  console.log(req.cookies);
   web3.eth.getBlock(req.params.id, (err, block) => {
     if (err) res.status(404).json(errorJson(err));
     res.json(block);
@@ -139,7 +159,7 @@ router.post('/hours/', (req, res, next) => {
     return res.status(400).json(errorJson('Bad Request'));
   if (!_.isNumber(req.body.duration))
     return res.status(400).json(errorJson('Bad Request'));
-  if (!req.pubtkt.uid)
+  if (!req.pubtkt || !req.pubtkt.uid)
     return res.status(400).json(errorJson('Bad Request'));
 
   const info = utils.encryptInfo(req.pubtkt.uid);

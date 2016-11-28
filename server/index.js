@@ -29,15 +29,15 @@ app.use('/api/', restapi);
 // FIXME: Should not be debug in production
 winston.level = 'debug';
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
   res.render('hours');
 });
 
-app.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res) => {
+app.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res, next) => {
   axios.get(`http://localhost:${port}/api/payrolls/${encodeURIComponent(req.params.address)}`)
     .then(response => response.data)
     .then(payroll => res.render('payroll', { payroll }))
-    .catch(err => console.log(err));
+    .catch(err => next(err));
 });
 
 eth.prepare()

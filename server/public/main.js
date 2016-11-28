@@ -1,4 +1,5 @@
 (function() {
+  var profile = {};
   var latestBlock = null;
   var hoursEvents = [];
   var hoursPending = {};
@@ -27,6 +28,13 @@
     return e.blockHash + ':' + e.logIndex;
   }
 
+  function refreshProfile() {
+    getJSON('/api/profile', function(err, data) {
+      profile = data;
+      updateEventList();
+    });
+  }
+
   function addHoursEvent(event) {
     for (var i = 0; i < hoursEvents.length; i++) {
       // If event already exists, do not re-add it
@@ -36,9 +44,11 @@
     }
     hoursEvents.push(event);
     hoursEvents.sort(eventComparator);
+    refreshProfile();
   }
 
   function fetchInitial() {
+    refreshProfile();
     getJSON('/api/block/latest', function(err, data) {
       latestBlock = data;
       updateEventList();
@@ -58,15 +68,16 @@
   }
 
   function updateEventList() {
-    var hoursForm = React.createElement(HoursForm, {
+    var topContent = React.createElement(TopContent, {
+      profile: profile,
+      transactions: hoursPending,
+      error: currentError,
       sendCallback: function(obj) { postJSON('/api/hours/', obj); },
       errorCallback: function(err) { showError(err); }
     });
-    ReactDOM.render(hoursForm, document.getElementById('hours-form'));
+    ReactDOM.render(topContent, document.getElementById('top-content'));
     var eventList = React.createElement(EventList, { events: hoursEvents, latestBlock: latestBlock });
     ReactDOM.render(eventList, document.getElementById('event-list'));
-    var statusBar = React.createElement(StatusBar, { transactions: hoursPending, error: currentError });
-    ReactDOM.render(statusBar, document.getElementById('transaction-status'));
   }
 
   var spinIcon = _.throttle(function() {
