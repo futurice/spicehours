@@ -25,7 +25,7 @@ function enableCacheInvalidation(interval) {
   }
   clearCache();
 }
-enableCacheInvalidation(10000);
+enableCacheInvalidation(900000); // 15 minutes cache
 
 function getFUMUser(username) {
   const cachedUser = userCache[username];
