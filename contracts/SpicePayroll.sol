@@ -66,18 +66,19 @@ contract SpicePayroll is SpiceControlled {
         }
 
         // If info not added yet, add it to the infos array
-        if (!entries[_info].available) {
-            entries[_info].available = true;
+        PayrollEntry entry = entries[_info];
+        if (!entry.available) {
+            entry.available = true;
             infos.push(_info);
         }
 
         // Modify entry duration and send marking event
         if (_duration < 0) {
-            entries[_info].duration -= uint(-_duration);
+            entry.duration -= uint(-_duration);
         } else {
-            entries[_info].duration += uint(_duration);
+            entry.duration += uint(_duration);
         }
-        AddMarking(_info, _description, _duration, entries[_info].duration);
+        AddMarking(_info, _description, _duration, entry.duration);
         return true;
     }
 
