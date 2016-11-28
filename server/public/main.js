@@ -92,19 +92,16 @@
       };
     },
     hoursChanged: function(event) {
-      this.state.hours = event.target.value;
-      this.forceUpdate();
+      this.setState({ hours: event.target.value });
     },
     isTitleValid: function() {
       return (this.state.title.length <= 32 || urlRegex.test(this.state.title));
     },
     titleChanged: function(event) {
-      this.state.title = event.target.value;
-      this.forceUpdate();
+      this.setState({ title: event.target.value });
     },
     descriptionChanged: function(event) {
-      this.state.title = event.target.value;
-      this.forceUpdate();
+      this.setState({ description: event.target.value });
     },
     sendMarking: function() {
       postJSON('/api/hours/jvah', {
