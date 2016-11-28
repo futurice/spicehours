@@ -1,5 +1,7 @@
 body {
   background-color: #E8F5F3;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
 }
 
 .container {
@@ -21,6 +23,12 @@ body {
   float: left;
 }
 
+@media (max-width: 550px) {
+  #chilicorn-icon {
+    display: none;
+  }
+}
+
 @keyframes spin {
   100% { transform:rotate(-360deg); }
 }
@@ -33,18 +41,77 @@ body {
   height: 128px;
 }
 
+.top-content > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.top-content:before {
+  content: "";
+  height: 100%;
+}
+
+#hours-form {
+  float: right;
+}
+
+.hours-form {
+  position: relative;
+  top: 10px;
+  bottom: 10px;
+}
+
+.hours-form > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.hours-form:before {
+  content: "";
+  height: 100%;
+}
+
 .hours-form label {
   display: inline-block;
-  width: 20%;
+  width: 100px;
   margin-top: 4px;
+  margin-right: 10px;
   vertical-align: top;
   text-align: right;
 }
 
-.hours-form input, .hours-form textarea, .hours-form button {
-  width: 20%;
+.hours-form input, .hours-form textarea {
+  width: 200px;
   margin-top: 2px;
   margin-left: 2px;
+}
+
+.hours-form textarea {
+  height: 50px;
+}
+
+.hours-form input[name="hours"] {
+  width: 45px;
+}
+
+.hours-form input[name="minutes"] {
+  width: 45px;
+}
+
+.hours-form input, .hours-form textarea {
+  border: 2px solid #9E9E9E;
+  box-shadow:
+    inset 0 0 8px  rgba(0,0,0,0.1),
+          0 0 16px rgba(0,0,0,0.1);
+  padding: 4px;
+  background: rgba(255,255,255,0.5);
+  margin: 0 0 2px 0;
+}
+
+.hours-form button {
+  width: 60px;
+  margin: 10px;
+  vertical-align: middle;
 }
 
 #transaction-status > div {

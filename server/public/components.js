@@ -149,47 +149,51 @@
         timeStyle['backgroundColor'] = '#ffcdd2';
       }
       return React.createElement('div', { className: 'hours-form' },
-        React.createElement('label', { htmlFor: 'title' }, 'Title:'),
-        React.createElement('input', {
-          name: 'title',
-          type: 'url',
-          style: titleStyle,
-          placeholder: 'Public title or link URL',
-          value: this.state.title,
-          onChange: this.titleChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label', { htmlFor: 'hours' }, 'Time spent:'),
-        React.createElement('input', {
-          id: 'hours',
-          type: 'number',
-          style: timeStyle,
-          step: 1,
-          min: -30,
-          max: 30,
-          value: this.state.hours,
-          onChange: this.hoursChanged
-        }),
-        React.createElement('input', {
-          id: 'minutes',
-          type: 'number',
-          style: timeStyle,
-          step: 15,
-          min: 0,
-          max: 59,
-          value: this.state.minutes,
-          onChange: this.minutesChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label', { htmlFor: 'description' }, 'Description:'),
-        React.createElement('textarea', {
-          name: 'description',
-          placeholder: 'Private description, not shown publicly',
-          value: this.state.description,
-          onChange: this.descriptionChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label'),
+        React.createElement('div', { className: 'fields' },
+          React.createElement('label', { htmlFor: 'title' }, 'Title:'),
+          React.createElement('input', {
+            name: 'title',
+            type: 'url',
+            style: titleStyle,
+            placeholder: 'Public title or link URL',
+            value: this.state.title,
+            onChange: this.titleChanged
+          }),
+          React.createElement('br'),
+          React.createElement('label', { htmlFor: 'hours' }, 'Time spent:'),
+          React.createElement('input', {
+            name: 'hours',
+            type: 'number',
+            style: timeStyle,
+            step: 1,
+            min: -30,
+            max: 30,
+            value: this.state.hours,
+            onChange: this.hoursChanged
+          }),
+          ' hours ',
+          React.createElement('input', {
+            name: 'minutes',
+            type: 'number',
+            style: timeStyle,
+            step: 15,
+            min: 0,
+            max: 59,
+            value: this.state.minutes,
+            onChange: this.minutesChanged
+          }),
+          ' minutes',
+          React.createElement('br'),
+          React.createElement('label', { htmlFor: 'description' }, 'Description:'),
+          React.createElement('textarea', {
+            name: 'description',
+            placeholder: 'Private description, not shown publicly',
+            value: this.state.description,
+            onChange: this.descriptionChanged
+          }),
+          React.createElement('br'),
+          React.createElement('label')
+        ),
         React.createElement('button', {
           id: 'send',
           htmlFor: 'send',
