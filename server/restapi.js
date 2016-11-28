@@ -106,35 +106,6 @@ function getEvents(event, ...args) {
   });
 }
 
-router.post('/hours/', (req, res, next) => {
-  if (!_.isNumber(req.body.duration))
-    return res.status(400).json(errorJson('Bad Request'));
-  if (!req.pubtkt.uid)
-    return res.status(400).json(errorJson('Bad Request'));
-
-  const info = utils.encryptInfo(req.pubtkt.uid);
-  const duration = req.body.duration;
-  let descr = utils.strToBytes32(req.body.description);
-
-  const hours = SpiceHours.deployed();
-  Promise.resolve()
-    .then(() => {
-      if (common.urlRegex.test(req.body.description)) {
-        return bitly.shortenURL(req.body.description)
-          .then(shortUrl => descr = shortUrl)
-          .catch(err => winston.warn(`URL shortening failed: ${err.message}`));
-      } else {
-        return Promise.resolve();
-      }
-    })
-    .then(() => {
-      return handleTransaction(hours.markHours, info, descr, duration)
-        .then(function(txid) {
-          res.status(204).send();
-        }).catch(next);
-    });
-});
-
 function errorJson(err) {
   if (_.isError(err)) {
     return { error: err.message.split('\n')[0] };
@@ -159,6 +130,37 @@ function processEvent(event) {
 
   return Promise.resolve(event);
 }
+
+router.post('/hours/', (req, res, next) => {
+  if (!req.body.title)
+    return res.status(400).json(errorJson('Bad Request'));
+  if (!_.isNumber(req.body.duration))
+    return res.status(400).json(errorJson('Bad Request'));
+  if (!req.pubtkt.uid)
+    return res.status(400).json(errorJson('Bad Request'));
+
+  const info = utils.encryptInfo(req.pubtkt.uid);
+  let title = utils.strToBytes32(req.body.title);
+  const duration = req.body.duration;
+
+  const hours = SpiceHours.deployed();
+  Promise.resolve()
+    .then(() => {
+      if (common.urlRegex.test(req.body.title)) {
+        return bitly.shortenURL(req.body.title)
+          .then(shortUrl => title = utils.strToBytes32(shortUrl))
+          .catch(err => winston.warn(`URL shortening failed: ${err.message}`));
+      } else {
+        return Promise.resolve();
+      }
+    })
+    .then(() => {
+      return handleTransaction(hours.markHours, info, title, duration)
+        .then(function(txid) {
+          res.status(204).send();
+        }).catch(next);
+    });
+});
 
 router.get('/hours/pending', (req, res, next) => {
   const allPending = eventapi.pending;
