@@ -141,7 +141,7 @@ function errorJson(err) {
   }
 }
 
-router.get('/block/:id', (req, res, next) => {
+router.get('/block/:id(0x[0-9a-f]{64}|latest)', (req, res, next) => {
   web3.eth.getBlock(req.params.id, (err, block) => {
     if (err) res.status(404).json(errorJson(err));
     res.json(block);
@@ -230,7 +230,7 @@ function getPayrollEntries(payrollAddress, processed) {
     })
 }
 
-router.get('/payrolls/:address', (req, res, next) => {
+router.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res, next) => {
   const hours = SpiceHours.deployed();
   const payroll = SpicePayroll.at(req.params.address);
   hours.hasPayroll(payroll.address)

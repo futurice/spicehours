@@ -1,155 +1,20 @@
 (function() {
-  var latestBlock;
+  var latestBlock = null;
   var hoursEvents = [];
   var hoursPending = {};
   var ratesPending = {};
+  var currentError = null;
 
-  // See https://gist.github.com/dperini/729294
-  var urlRegex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i
-
-  var dateFormatter = new Intl.DateTimeFormat([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric' });
-
-  var EventItem = React.createClass({
-    propTypes: {
-      event: React.PropTypes.object.isRequired
-    },
-    render: function() {
-      var event = this.props.event;
-      var date = dateFormatter.format(event.block ? new Date(event.block.timestamp * 1000) : new Date());
-      var name = (event.user ? event.user.first_name + ' ' + event.user.last_name : event.args.info);
-      var descr = urlRegex.test(event.args.description)
-        ? React.createElement('a', { href: event.args.description }, event.args.description)
-        : event.args.description;
-      var confirm = (latestBlock && event.block) ? ' ' + (latestBlock - event.block.number) + ' confirmations' : null;
-      if (event.event === 'MarkHours') {
-        return React.createElement('li', { key: eventId(event) },
-          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
-          React.createElement('div', {},
-            name + ' marked ' + moment.duration(event.args.duration*1000).humanize() + ' to project ', descr,
-            (event.args.success ? '' : ' FAILED')
-          )
-        );
-      } else if (event.event === 'ProcessPayroll') {
-        return React.createElement('li', { key: eventId(event) },
-          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
-          React.createElement('div', {},
-            'Processed ',
-            React.createElement('a', { href: '/payrolls/' + event.args.payroll }, 'payroll'),
-            ' capping all markings to ' + (event.args.maxDuration / 3600) + ' hours'
-          )
-        );
-      } else if (event.event === 'CreatePayroll') {
-        return React.createElement('li', { key: eventId(event) },
-          React.createElement('div', {}, date, (confirm ? ', ' + confirm : '')),
-          React.createElement('div', {},
-            'Created new ',
-            React.createElement('a', { href: '/payrolls/' + event.args.payroll }, 'payroll'),
-            ' for hour markings'
-          )
-        );
-      } else {
-        return React.createElement('li', { key: eventId(event) },
-          date + ' Unknown event ' + event.event
-        );
+  function showError(err) {
+    currentError = err;
+    setTimeout(function() {
+      if (currentError === err) {
+        currentError = null;
+        updateEventList();
       }
-    }
-  });
-
-  var EventList = React.createClass({
-    propTypes: {
-      events: React.PropTypes.array.isRequired
-    },
-    render: function() {
-      var children = this.props.events.map(function(event) {
-        return React.createElement(EventItem, { event: event });
-      });
-      return React.createElement.apply(this, ['ul', {}].concat(children));
-    }
-  });
-
-  var TxPending = React.createClass({
-    propTypes: {
-      transactions: React.PropTypes.object.isRequired
-    },
-    render: function() {
-      var txCount = Object.keys(this.props.transactions).length;
-      if (txCount > 0) {
-        return React.createElement('div', { className: 'pending' },
-          txCount + ' transactions pending, please wait');
-      } else {
-        return React.createElement('div', {},
-          'No transactions pending, everything up-to-date');
-      }
-    }
-  });
-
-  var HoursForm = React.createClass({
-    getInitialState: function() {
-      return {
-        hours: 1,
-        title: '',
-        description: ''
-      };
-    },
-    hoursChanged: function(event) {
-      this.setState({ hours: event.target.value });
-    },
-    isTitleValid: function() {
-      return (this.state.title.length <= 32 || urlRegex.test(this.state.title));
-    },
-    titleChanged: function(event) {
-      this.setState({ title: event.target.value });
-    },
-    descriptionChanged: function(event) {
-      this.setState({ description: event.target.value });
-    },
-    sendMarking: function() {
-      postJSON('/api/hours/jvah', {
-        duration: parseFloat(this.state.hours)*3600,
-        description: this.state.title
-      });
-    },
-    render: function() {
-      var titleStyle = {};
-      if (!this.isTitleValid()) {
-        titleStyle['backgroundColor'] = '#ffcdd2';
-      }
-      return React.createElement('div', { className: 'hours-form' },
-        React.createElement('label', { htmlFor: 'title' }, 'Title:'),
-        React.createElement('input', {
-          name: 'title',
-          type: 'url',
-          style: titleStyle,
-          placeholder: 'Public title or link URL',
-          defaultValue: this.state.title,
-          onChange: this.titleChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label', { htmlFor: 'hours' }, 'Hours spent:'),
-        React.createElement('input', {
-          id: 'hours',
-          type: 'number',
-          step: 0.25,
-          defaultValue: this.state.hours,
-          onChange: this.hoursChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label', { htmlFor: 'description' }, 'Description:'),
-        React.createElement('textarea', {
-          name: 'description',
-          placeholder: 'Private description, not shown publicly',
-          onChange: this.descriptionChanged
-        }),
-        React.createElement('br'),
-        React.createElement('label'),
-        React.createElement('button', {
-          id: 'send',
-          htmlFor: 'send',
-          onClick: this.sendMarking
-        }, 'Send')
-      );
-    }
-  });
+    }, 2000);
+    updateEventList();
+  }
 
   function eventComparator(a, b) {
     if (b.blockNumber != a.blockNumber) {
@@ -174,6 +39,10 @@
   }
 
   function fetchInitial() {
+    getJSON('/api/block/latest', function(err, data) {
+      latestBlock = data;
+      updateEventList();
+    });
     getJSON('/api/hours/events', function(err, data) {
       data.forEach(function(event) {
         addHoursEvent(event);
@@ -189,12 +58,15 @@
   }
 
   function updateEventList() {
-    var hoursForm = React.createElement(HoursForm, {});
+    var hoursForm = React.createElement(HoursForm, {
+      sendCallback: function(obj) { postJSON('/api/hours/jvah', obj); },
+      errorCallback: function(err) { showError(err); }
+    });
     ReactDOM.render(hoursForm, document.getElementById('hours-form'));
-    var eventList = React.createElement(EventList, { events: hoursEvents });
+    var eventList = React.createElement(EventList, { events: hoursEvents, latestBlock: latestBlock });
     ReactDOM.render(eventList, document.getElementById('event-list'));
-    var txPending = React.createElement(TxPending, { transactions: hoursPending });
-    ReactDOM.render(txPending, document.getElementById('transaction-status'));
+    var statusBar = React.createElement(StatusBar, { transactions: hoursPending, error: currentError });
+    ReactDOM.render(statusBar, document.getElementById('transaction-status'));
   }
 
   var spinIcon = _.throttle(function() {
@@ -211,7 +83,7 @@
   var socket = io();
   socket.on('block', function(msg) {
     console.log('block: ' + msg);
-    latestBlock = JSON.parse(msg).number;
+    latestBlock = JSON.parse(msg);
   });
   socket.on('rates/pending', function(msg) {
     console.log('rates pending: ' + msg);
