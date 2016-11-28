@@ -17,10 +17,16 @@ contract SpiceHours is SpiceControlled {
 
     function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
         if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
+        if (_duration == 0) throw;
+        if (_info == 0) throw;
 
         SpicePayroll payroll = SpicePayroll(payrolls[payrolls.length-1]);
         bool success = payroll.addMarking(_info, _description, _duration);
         MarkHours(_info, _description, _duration, success);
+    }
+
+    function markHours(bytes32 _description, int _duration) {
+        markHours(members.memberInfo(msg.sender), _description, _duration);
     }
 
     function processPayroll(address _calculator, uint _maxDuration) onlyDirector {

@@ -17,7 +17,7 @@ contract SpicePayroll is SpiceControlled {
     uint public toBlock;
 
     mapping (bytes32 => PayrollEntry) entries;
-    bytes32[] public infos;
+    bytes32[] infos;
 
     address calculator;
     bool public locked;
@@ -58,26 +58,25 @@ contract SpicePayroll is SpiceControlled {
     }
 
     function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed returns(bool) {
-        if (_duration == 0) throw;
-        if (_info == 0) throw;
-
+        // Check if the duration would become negative as a result of this marking
+        // and if it does, mark this as failed and return false to indicate failure.
         if (_duration < 0 && entries[_info].duration < uint(-_duration)) {
           FailedMarking(_info, _description, entries[_info].duration, _duration);
           return false;
         }
 
-        // If not avalable, add to infos to make iterable
+        // If info not added yet, add it to the infos array
         if (!entries[_info].available) {
             entries[_info].available = true;
             infos.push(_info);
         }
 
+        // Modify entry duration and send marking event
         if (_duration < 0) {
             entries[_info].duration -= uint(-_duration);
         } else {
             entries[_info].duration += uint(_duration);
         }
-
         AddMarking(_info, _description, _duration, entries[_info].duration);
         return true;
     }
