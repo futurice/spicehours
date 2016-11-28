@@ -21,6 +21,9 @@ module.exports = {
       network_id: 2,
       gas: 3141592
     },
+    "ropsten": {
+      network_id: 3
+    },
     "development": {
       network_id: "default"
     }

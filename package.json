@@ -9,7 +9,7 @@
     "fixtures:hours": "truffle exec fixtures/hours.js",
     "fixtures": "npm run fixtures:members && npm run fixtures:hours",
     "migrate:dev": "truffle migrate --network development && npm run fixtures",
-    "migrate:testnet": "truffle migrate --network morden",
+    "migrate:testnet": "truffle migrate --network ropsten",
     "migrate:live": "truffle migrate --network live",
     "testrpc": "testrpc",
     "test": "testrpc & truffle test ; RETVAL=$? ; JOBS=`jobs -p` ; if [ -n \"$JOBS\" ]; then kill $JOBS; fi ; exit $RETVAL",
