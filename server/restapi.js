@@ -14,6 +14,7 @@ const contracts = eth.contracts;
 const SpiceMembers = contracts.SpiceMembers;
 const SpiceHours = contracts.SpiceHours;
 const SpicePayroll = contracts.SpicePayroll;
+const SpiceRates = contracts.SpiceRates;
 
 const LEVEL_OWNER = 'Owner';
 function levelName(level) {
@@ -264,6 +265,28 @@ router.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res, next) => {
         .then(events => payrollObj.events = events)
         .then(() => res.json(payrollObj));
     })
+    .catch(err => next(err));
+});
+
+router.get('/rates/', (req, res, next) => {
+  const output = {};
+  const rates = SpiceRates.deployed();
+  rates.hourlyRate()
+    .then(rate => output.hourlyRate = rate)
+    .then(() => rates.entryCount())
+    .then(count =>
+      Promise.all(_.range(0, count).map(idx => rates.entryInfo(idx)))
+    )
+    .then(infos => {
+      const entries = {};
+      return Promise.all(
+        infos.map(info =>
+          rates.unpaidPercentage(info)
+            .then(rate => entries[utils.decryptInfo(info)] = { unpaidPercentage: rate })
+        )
+      ).then(() => output.entries = entries);
+    })
+    .then(() => res.json(output))
     .catch(err => next(err));
 });
 
