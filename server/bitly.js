@@ -7,7 +7,12 @@ if (!config.BITLY_TOKEN) {
 const bitly = new Bitly(config.BITLY_TOKEN);
 
 function shortenURL(url) {
-  return bitly.shorten(url).then(res => res.data.url);
+  return bitly.shorten(url).then(res => res.data);
+}
+
+function linkInfo(url) {
+  return bitly.info(url).then(res => res.data);
 }
 
 exports.shortenURL = shortenURL;
+exports.linkInfo = linkInfo;

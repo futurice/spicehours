@@ -1,10 +1,12 @@
 const _ = require('lodash/fp');
 const express = require('express');
 const eth = require('./eth');
+const user = require('./user');
 const utils = require('./utils');
 const common = require('./common');
 const bitly = require('./bitly');
 const eventapi = require('./eventapi');
+const flowdock = require('./flowdock');
 
 const router = express.Router();
 const web3 = eth.web3;
@@ -140,22 +142,26 @@ router.post('/hours/', (req, res, next) => {
     return res.status(400).json(errorJson('Bad Request'));
 
   const info = utils.encryptInfo(req.pubtkt.uid);
-  let title = utils.strToBytes32(req.body.title);
+  let title = req.body.title;
   const duration = req.body.duration;
+  const description = req.body.description;
 
   const hours = SpiceHours.deployed();
-  Promise.resolve()
-    .then(() => {
-      if (common.urlRegex.test(req.body.title)) {
-        return bitly.shortenURL(req.body.title)
-          .then(shortUrl => title = utils.strToBytes32(shortUrl))
-          .catch(err => winston.warn(`URL shortening failed: ${err.message}`));
+  user.getUser(req.pubtkt.uid)
+    .catch(err => req.pubtkt.uid)
+    .then(user => {
+      if (common.urlRegex.test(title)) {
+        return bitly.shortenURL(title)
+          .then(data => title = data.url)
+          .catch(err => winston.warn(`URL shortening failed: ${err.message}`))
+          .then(() => flowdock.sendMarking(user, title, duration, description));
       } else {
-        return Promise.resolve();
+        return flowdock.sendMarking(user, title, duration, description);
       }
     })
     .then(() => {
-      return handleTransaction(hours.markHours, info, title, duration)
+      const titleBytes = utils.strToBytes32(title);
+      return handleTransaction(hours.markHours, info, titleBytes, duration)
         .then(function(txid) {
           res.status(204).send();
         }).catch(next);
