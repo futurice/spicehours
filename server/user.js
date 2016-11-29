@@ -16,11 +16,11 @@ function isFUMUser(username) {
     .then(() => true, () => false);
 }
 
-let userCache = {};
+let employeesCache = null;
 function enableCacheInvalidation(interval) {
   function clearCache() {
     winston.info('Clearing user cache');
-    userCache = {};
+    employeesCache = null;
     setTimeout(clearCache, interval);
   }
   clearCache();
@@ -28,22 +28,25 @@ function enableCacheInvalidation(interval) {
 enableCacheInvalidation(900000); // 15 minutes cache
 
 function getFUMUser(username) {
-  const cachedUser = userCache[username];
-  if (cachedUser) {
-    return cachedUser;
+  let employeesPromise;
+  if (Array.isArray(employeesCache)) {
+    employeesPromise = Promise.resolve(employeesCache);
+  } else if (employeesCache) {
+    employeesPromise = employeesCache;
   } else {
-    winston.debug(`Fetching FUM user ${username} from the server`);
-    userCache[username] = client.get(`/users/${username}/`)
-      .then(res => _.pick([
+    winston.debug(`Fetching FUM employees from the server`);
+    employeesPromise = employeesCache = client.get(`/list/employees/`).then(res => res.data);
+  }
+  return employeesPromise
+    .then(employees => _.find(employee => employee.username === username, employees))
+    .then(employee => _.pick([
         'id',
         'username',
         'first_name',
         'last_name',
         'physical_office',
         'hr_number'
-      ], res.data));
-    return userCache[username];
-  }
+      ], employee));
 }
 
 exports.isUser = isFUMUser;
