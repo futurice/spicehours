@@ -11,10 +11,10 @@
     setTimeout(function() {
       if (currentError === err) {
         currentError = null;
-        updateEventList();
+        updateViews();
       }
     }, 2000);
-    updateEventList();
+    updateViews();
   }
 
   function eventComparator(a, b) {
@@ -31,7 +31,7 @@
   function refreshProfile() {
     getJSON('/api/profile', function(err, data) {
       profile = data;
-      updateEventList();
+      updateViews();
     });
   }
 
@@ -51,23 +51,23 @@
     refreshProfile();
     getJSON('/api/block/latest', function(err, data) {
       latestBlock = data;
-      updateEventList();
+      updateViews();
     });
     getJSON('/api/hours/events', function(err, data) {
       data.forEach(function(event) {
         addHoursEvent(event);
       });
-      updateEventList();
+      updateViews();
     });
     getJSON('/api/hours/pending', function(err, data) {
       data.forEach(function(tx) {
         hoursPending[tx.hash] = tx;
       });
-      updateEventList();
+      updateViews();
     });
   }
 
-  function updateEventList() {
+  function updateViews() {
     var topContent = React.createElement(TopContent, {
       profile: profile,
       transactions: hoursPending,
@@ -95,6 +95,7 @@
   socket.on('block', function(msg) {
     console.log('block: ' + msg);
     latestBlock = JSON.parse(msg);
+    updateViews();
   });
   socket.on('rates/pending', function(msg) {
     console.log('rates pending: ' + msg);
@@ -110,13 +111,13 @@
     console.log('hours pending: ' + msg);
     const tx = JSON.parse(msg);
     hoursPending[tx.hash] = tx;
-    updateEventList();
+    updateViews();
   });
   socket.on('hours/tx', function(msg) {
     console.log('hours tx: ' + msg);
     const tx = JSON.parse(msg);
     delete hoursPending[tx.hash];
-    updateEventList();
+    updateViews();
   });
   socket.on('hours/receipt', function(msg) {
     console.log('hours receipt: ' + msg);
@@ -125,7 +126,7 @@
     console.log('hours event: ' + msg);
     const event = JSON.parse(msg);
     addHoursEvent(event);
-    updateEventList();
+    updateViews();
     spinIcon();
   });
 })();

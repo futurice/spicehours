@@ -118,11 +118,11 @@ function errorJson(err) {
 }
 
 router.get('/profile', (req, res, next) => {
- // if (!req.pubtkt || !req.pubtkt.uid)
-   // return res.status(400).json(errorJson('Bad Request'));
+  if (!req.pubtkt || !req.pubtkt.uid)
+    return res.status(400).json(errorJson('Bad Request'));
 
   const output = {};
-  const username = /*req.pubtkt.uid*/ 'jvah';
+  const username = req.pubtkt.uid;
   const hours = SpiceHours.deployed();
   const rates = SpiceRates.deployed();
   user.getUser(username)
