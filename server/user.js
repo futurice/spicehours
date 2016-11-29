@@ -13,7 +13,7 @@ const client = axios.create({
 
 function isFUMUser(username) {
   return getFUMUser(username)
-    .then(() => true, () => false);
+    .then(user => !!user);
 }
 
 let employeesCache = null;

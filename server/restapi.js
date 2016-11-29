@@ -162,6 +162,7 @@ router.post('/hours/', (req, res, next) => {
   if (!req.pubtkt || !req.pubtkt.uid)
     return res.status(400).json(errorJson('Bad Request'));
 
+  let userObj;
   const info = utils.encryptInfo(req.pubtkt.uid);
   let title = req.body.title;
   const duration = req.body.duration;
@@ -169,24 +170,24 @@ router.post('/hours/', (req, res, next) => {
 
   const hours = SpiceHours.deployed();
   user.getUser(req.pubtkt.uid)
-    .catch(err => req.pubtkt.uid)
-    .then(user => {
+    .then(user => userObj = user || req.pubtkt.uid)
+    .then(() => {
       if (common.urlRegex.test(title)) {
         return bitly.shortenURL(title)
           .then(data => title = data.url)
-          .catch(err => winston.warn(`URL shortening failed: ${err.message}`))
-          .then(() => flowdock.sendMarking(user, title, duration, description));
+          .catch(err => winston.warn(`URL shortening failed: ${err.message}`));
       } else {
-        return flowdock.sendMarking(user, title, duration, description);
+        return Promise.resolve();
       }
     })
-    .then(() => {
-      const titleBytes = utils.strToBytes32(title);
-      return handleTransaction(hours.markHours, info, titleBytes, duration)
-        .then(function(txid) {
-          res.status(204).send();
-        }).catch(next);
-    });
+    .then(() =>
+      handleTransaction(hours.markHours, info, utils.strToBytes32(title), duration)
+    )
+    .then(txid =>
+      flowdock.sendMarking(userObj, title, duration, description, txid)
+    )
+    .then(() => res.status(204).send())
+    .catch(next);
 });
 
 router.get('/hours/pending', (req, res, next) => {

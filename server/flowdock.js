@@ -17,7 +17,7 @@ function formatDuration(duration) {
   return str;
 }
 
-function sendMarking(user='unknown', title='', duration, description='') {
+function sendMarking(user='unknown', title='', duration, description='', transaction) {
   console.log('sending marking');
   if (!config.FLOWDOCK_TOKEN) {
     winston.warn(`Flowdock token not found, not sending event to inbox: ${JSON.stringify(user)} ${JSON.stringify(title)} ${duration} ${description}`);
@@ -36,6 +36,7 @@ function sendMarking(user='unknown', title='', duration, description='') {
     const titlerow = titlestr ? `<b>Project:</b> ${titlestr}<br>` : '';
     const linkrow = info ? `<b>Link:</b> ${info.short_url}<br>` : '';
     const durationstr = formatDuration(duration);
+    const transactionrow = transaction ? `<b>Transaction:</b> <a href="https://etherscan.io/tx/${transaction}">${transaction}</a><br>` : '';
     const descriptionrow = description ? `<b>Description:</b><br>${description.replace(/\n/g, '<br>')}` : '';
     return client.post('/messages', {
       flow_token: config.FLOWDOCK_TOKEN,
@@ -45,7 +46,7 @@ function sendMarking(user='unknown', title='', duration, description='') {
       from_address: config.FLOWDOCK_FROM,
       from_name: 'SpiceHours',
       subject: `${userstr} marked ${formatDuration(duration)}`,
-      content: `${titlerow}${linkrow}<b>Duration:</b> ${formatDuration(duration)}<br>${descriptionrow}`
+      content: `${titlerow}${linkrow}<b>Duration:</b> ${formatDuration(duration)}<br>${transactionrow}${descriptionrow}`
     })
   }).catch(err => winston.err(`Could not send information to flowdock: ${JSON.stringify(user)} ${JSON.stringify(title)} ${duration} ${description}`));
 }
