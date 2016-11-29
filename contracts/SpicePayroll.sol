@@ -88,14 +88,11 @@ contract SpicePayroll is SpiceControlled {
             bytes32 info = infos[i];
             PayrollEntry entry = entries[info];
 
-            uint duration = (entry.duration <= _maxDuration) ? entry.duration : _maxDuration;
-            uint payout = IPayoutCalculator(calculator).calculatePayout(info, duration);
-            ProcessMarkings(info, entry.duration, duration, payout);
-
-            entry.duration = duration;
-            entry.payout = payout;
+            uint originalDuration = entry.duration;
+            entry.duration = (originalDuration <= _maxDuration) ? originalDuration : _maxDuration;
+            entry.payout = IPayoutCalculator(calculator).calculatePayout(info, entry.duration);
+            ProcessMarkings(info, originalDuration, entry.duration, entry.payout);
         }
-
         toBlock = block.number;
         AllMarkingsProcessed(_calculator, _maxDuration, fromBlock, toBlock);
     }
