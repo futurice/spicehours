@@ -15,7 +15,8 @@ module.exports = {
   },
   networks: {
     "live": {
-      network_id: 1
+      network_id: 1,
+      gas: 3141592
     },
     "morden": {
       network_id: 2,
