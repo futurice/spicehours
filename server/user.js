@@ -35,7 +35,12 @@ function getFUMUser(username) {
     employeesPromise = employeesCache;
   } else {
     winston.debug(`Fetching FUM employees from the server`);
-    employeesPromise = employeesCache = client.get(`/list/employees/`).then(res => res.data);
+    employeesPromise = employeesCache = client.get(`/list/employees/`)
+      .then(res => res.data)
+      .catch(err => {
+        employeesCache = null;
+        return Promise.reject(err);
+      });
   }
   return employeesPromise
     .then(employees => _.find(employee => employee.username === username, employees))

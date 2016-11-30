@@ -28,12 +28,13 @@
     return e.blockHash + ':' + e.logIndex;
   }
 
-  function refreshProfile() {
+  var refreshProfile = _.throttle(function() {
     getJSON('/api/profile', function(err, data) {
+      if (err) return showError('Error loading profile information');
       profile = data;
       updateViews();
     });
-  }
+  }, 1000);
 
   function addHoursEvent(event) {
     for (var i = 0; i < hoursEvents.length; i++) {
