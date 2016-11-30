@@ -103,6 +103,7 @@ body {
 
 .hours-form textarea {
   height: 50px;
+  resize: none;
 }
 
 .hours-form input[name="hours"] {
