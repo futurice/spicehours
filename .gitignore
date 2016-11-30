@@ -1,4 +1,5 @@
 server/config.json
+server/employees.json
 node_modules/
 npm-debug.log
 *.swp

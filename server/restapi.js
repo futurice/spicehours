@@ -94,7 +94,8 @@ function handleTransaction(method, ...args) {
        return usedGas;
      })
     .then(usedGas => {
-      const options = _.assoc('gas', usedGas, _.last(args));
+      const gas = usedGas * 2;
+      const options = _.assoc('gas', gas, _.last(args));
       const newArgs = _.concat(_.dropRight(1, args), [options]);
       return _.spread(method)(newArgs);
     });
