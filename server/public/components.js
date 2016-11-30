@@ -5,10 +5,12 @@
   var dateFormatter = new Intl.DateTimeFormat([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric' });
 
   function formatDuration(duration) {
-    if (!duration) return '0 hours';
+    if (!duration) duration = 0;
+    else duration = parseInt(duration, 10);
+
     var str = '';
-    if (Math.floor(duration / 3600) > 0)  {
-      str += Math[duration > 0 ? 'floor' : 'ceil'](duration / 3600) + ' hours';
+    if (Math.floor(duration / 3600) !== 0 || (duration % 3600) === 0)  {
+      str += Math[duration >= 0 ? 'floor' : 'ceil'](duration / 3600) + ' hours';
     }
     if ((duration % 3600) !== 0) {
       if (str.length > 0) str += ' ';
