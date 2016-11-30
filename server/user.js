@@ -25,7 +25,14 @@ function enableCacheInvalidation(interval) {
   }
   clearCache();
 }
-enableCacheInvalidation(900000); // 15 minutes cache
+
+// FIXME: This is a hack, if employees.json found use it
+try {
+  employeesCache = require('./employees');
+} catch(e) {}
+if (!employeesCache) {
+  enableCacheInvalidation(900000); // 15 minutes cache
+}
 
 function getFUMUser(username) {
   let employeesPromise;
