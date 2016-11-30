@@ -80,7 +80,7 @@ function attachEvents(io, contracts, proc) {
         handleTransaction(io, contracts, tx);
         web3.eth.getTransactionReceipt(tx.hash, (err, receipt) => {
           if (err) return io.emit('error', err.message);
-          handleTransactionReceipt(io, contracts, receipt, proc);
+          if (receipt) handleTransactionReceipt(io, contracts, receipt, proc);
         });
       });
     });
