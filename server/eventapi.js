@@ -93,7 +93,7 @@ function attachTransactions(io, contracts) {
     if (err) return io.emit('error', err.message);
     web3.eth.getTransaction(txid, (err, tx) => {
       if (err) return io.emit('error', err.message);
-      handleTransaction(io, contracts, tx);
+      if (tx) return handleTransaction(io, contracts, tx);
     });
   });
 }
