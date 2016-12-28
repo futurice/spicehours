@@ -34,9 +34,10 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res, next) => {
-  axios.get(`http://localhost:${port}/api/payrolls/${encodeURIComponent(req.params.address)}`)
+  const address = req.params.address;
+  axios.get(`http://localhost:${port}/api/payrolls/${encodeURIComponent(address)}`)
     .then(response => response.data)
-    .then(payroll => res.render('payroll', { payroll }))
+    .then(payroll => res.render('payroll', { payroll, address }))
     .catch(err => next(err));
 });
 

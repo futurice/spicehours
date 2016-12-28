@@ -10,9 +10,9 @@ module.exports = function(callback) {
       hours.markHours(utils.encryptInfo('vtai'), utils.strToBytes32('bazdescr'), 7200)
     ]))
     .then(() => rates.setUnpaidPercentage(utils.encryptInfo('vtai'), 40))
-    .then(() => Promise.all([
-      hours.processPayroll(rates.address, 30*60*60)
-    ]))
+    .then(() => hours.processPayroll(rates.address, 30*60*60))
+    .then(() => hours.payrolls(0))
+    .then(address => SpicePayroll.at(address).lock())
     .then(() => Promise.all([
       hours.markHours(utils.encryptInfo('jvah'), utils.strToBytes32('foodescr'), 900),
       hours.markHours(utils.encryptInfo('ttur'), utils.strToBytes32('bardescr'), 1800),

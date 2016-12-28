@@ -36,7 +36,9 @@
     "lodash": "4.16.6",
     "socket.io": "1.7.1",
     "web3": "0.16.0",
-    "winston": "2.3.0"
+    "winston": "2.3.0",
+    "workbook": "1.1.3",
+    "xlsx": "0.8.0"
   },
   "devDependencies": {
     "ethereumjs-testrpc": "3.0.2",

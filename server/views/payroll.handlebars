@@ -4,6 +4,9 @@
   </head>
   <body>
     Payroll processed: {{payroll.processed}}, locked: {{payroll.locked}}
+    {{#if payroll.locked}}
+      <a href="/api/payrolls/{{address}}/excel">Download Excel</a>
+    {{/if}}
     <table>
       <thead>
         <tr>

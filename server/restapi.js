@@ -5,6 +5,7 @@ const user = require('./user');
 const utils = require('./utils');
 const common = require('./common');
 const bitly = require('./bitly');
+const excel = require('./excel');
 const eventapi = require('./eventapi');
 const flowdock = require('./flowdock');
 
@@ -264,28 +265,48 @@ function getPayrollEntries(payrollAddress, processed) {
     })
 }
 
+function getPayroll(address) {
+  const payroll = SpicePayroll.at(address);
+  const payrollObj = {};
+
+  return Promise.resolve()
+    .then(() => payroll.locked())
+    .then(locked => payrollObj.locked = locked)
+    .then(() => payroll.processed())
+    .then(processed => {
+      payrollObj.processed = processed;
+      return getPayrollEntries(payroll.address, processed)
+    })
+    .then(entries => payrollObj.entries = entries)
+    .then(() => payroll.fromBlock())
+    .then(fromBlock => getEvents(payroll.allEvents, { fromBlock }))
+    .then(events => Promise.all(_.map(common.processEvent, events)))
+    .then(events => payrollObj.events = events)
+    .then(() => payrollObj);
+}
+
 router.get('/payrolls/:address(0x[0-9a-f]{40})', (req, res, next) => {
   const hours = SpiceHours.deployed();
-  const payroll = SpicePayroll.at(req.params.address);
-  hours.hasPayroll(payroll.address)
+  const address = req.params.address;
+  hours.hasPayroll(address)
     .then(hasPayroll => {
       if (!hasPayroll) return res.status(404).send(errorJson('Not Found'));
+      return getPayroll(address).then(payroll => res.json(payroll));
+    })
+    .catch(err => next(err));
+});
 
-      const payrollObj = {};
-      return Promise.resolve()
-        .then(() => payroll.locked())
-        .then(locked => payrollObj.locked = locked)
-        .then(() => payroll.processed())
-        .then(processed => {
-          payrollObj.processed = processed;
-          return getPayrollEntries(payroll.address, processed)
-        })
-        .then(entries => payrollObj.entries = entries)
-        .then(() => payroll.fromBlock())
-        .then(fromBlock => getEvents(payroll.allEvents, { fromBlock }))
-        .then(events => Promise.all(_.map(common.processEvent, events)))
-        .then(events => payrollObj.events = events)
-        .then(() => res.json(payrollObj));
+router.get('/payrolls/:address(0x[0-9a-f]{40})/excel', (req, res, next) => {
+  const hours = SpiceHours.deployed();
+  const address = req.params.address;
+  hours.hasPayroll(address)
+    .then(hasPayroll => {
+      if (!hasPayroll) return res.status(404).send(errorJson('Not Found'));
+      return getPayroll(address).then(payroll => {
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=payroll-' + address + '.xlsx');
+        res.send(excel.payrollToExcel(payroll));
+      });
     })
     .catch(err => next(err));
 });
