@@ -16,7 +16,7 @@ function payrollPaidRows(payroll) {
       username,
       _.get('user.hr_number', user) || '',
       _.get('user.first_name', user) + ' ' + _.get('user.last_name', user) || '',
-      parseInt(user.payout ? user.payout.toString().slice(0, -6) : '', 10)
+      parseInt(user.payout ? user.payout.toString().slice(0, -6) : '', 10) || ''
     ];
   });
   const sortedRows = _.sortBy(row => row[1] || Infinity, userRows);
