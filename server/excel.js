@@ -33,7 +33,6 @@ function payrollHistory(payroll) {
     'Payout (euros)'
   ];
   const eventRows = events.map(event => {
-    console.log(event);
     return [
       event.event,
       _.get('args.info', event) || '',
