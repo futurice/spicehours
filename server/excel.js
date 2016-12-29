@@ -16,7 +16,7 @@ function payrollPaidRows(payroll) {
       username,
       _.get('user.hr_number', user) || '',
       _.get('user.first_name', user) + ' ' + _.get('user.last_name', user) || '',
-      parseInt(user.payout ? user.payout.toString().slice(0, -6) : '', 10) || ''
+      parseInt(user.payout ? user.payout.toString().slice(0, -6) : '', 10) || 0
     ];
   });
   const sortedRows = _.sortBy(row => row[1] || Infinity, userRows);
@@ -39,7 +39,7 @@ function payrollHistory(payroll) {
       _.get('args.info', event) || '',
       _.get('args.description', event) || '',
       parseInt(event.args.duration ? event.args.duration.toString() : '', 10) / 3600 || '',
-      parseInt(event.args.payout ? event.args.payout.toString().slice(0, -6) : '', 10) || ''
+      parseInt(event.args.payout ? event.args.payout.toString().slice(0, -4) : '', 10) / 100 || ''
     ];
   });
   return [ headRow ].concat(eventRows);
