@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "truffle build",
+    "build:dev": "truffle build --network development",
+    "build:testnet": "truffle build --network ropsten",
+    "build:live": "truffle build --network live",
     "compile": "truffle compile",
     "fixtures:members": "truffle exec fixtures/members.js",
     "fixtures:hours": "truffle exec fixtures/hours.js",
@@ -43,6 +45,8 @@
   "devDependencies": {
     "ethereumjs-testrpc": "3.0.2",
     "nodemon": "1.11.0",
-    "truffle": "2.1.1"
+    "truffle": "2.1.1",
+    "ether-pudding": "git+https://github.com/jvah/ether-pudding.git#f2a0f1ec26e5b30358d8d4241f910d3d00281830",
+    "solc": "0.4.4"
   }
 }
