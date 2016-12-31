@@ -1,9 +1,16 @@
 module.exports = {
   build: {
     "index.html": "index.html",
-    "app.js": [
-      "javascripts/app.js"
-    ],
+    "app.js": {
+      "files": [
+        "javascripts/bootstrap.js",
+        "javascripts/app.js"
+      ],
+      "post-process": [
+        "include-contracts",
+        "frontend-dependencies"
+      ]
+    },
     "app.css": [
       "stylesheets/app.css"
     ],
