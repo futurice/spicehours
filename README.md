@@ -1,5 +1,7 @@
 # SpiceHours
 
+[![Build Status](https://travis-ci.org/jvah/spicehours.svg?branch=master)](https://travis-ci.org/jvah/spicehours)
+
 Hour marking system storing data in Ethereum blockchain.
 
 ## Production Setup
