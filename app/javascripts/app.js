@@ -1,20 +1,15 @@
 var state = {};
 
-
 var PayrollList = React.createClass({
   propTypes: {
     payrolls: React.PropTypes.array
   },
   render: function() {
-    if (this.props.payrolls) {
-      return React.createElement('ul', {},
-        this.props.payrolls.map(function(payroll) {
-          return React.createElement('li', { key: payroll.address }, payroll.address);
-        })
-      );
-    } else {
-      return React.createElement('div', {}, 'Loading');
-    }
+    return React.createElement('ul', {},
+      this.props.payrolls.map(function(payroll) {
+        return React.createElement('li', { key: payroll.address }, payroll.address);
+      })
+    );
   }
 });
 
@@ -24,12 +19,10 @@ function render() {
 }
 
 function fetchData(path, fetcher) {
-  state = _.update(path, null, state);
   fetcher()
     .then(function(value) { state = _.assoc(path, value, state); })
     .then(function() { render(); })
     .catch(function(err) { alert("Error: " + err.toString()); });
-  render();
 }
 
 function fetchPayrolls() {

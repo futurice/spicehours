@@ -1,5 +1,7 @@
 server/config.json
 server/employees.json
+build/*
+!build/contracts/
 node_modules/
 npm-debug.log
 *.swp
