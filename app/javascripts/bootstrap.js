@@ -14,8 +14,8 @@ window.addEventListener('load', function() {
     window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io'));
   }
 
-  [IPayoutCalculator,SpiceControlled,Migrations,SpiceHours,SpiceMembers,SpicePayroll,SpiceRates].forEach(function(contract) {
-    contract.setProvider(window.web3.currentProvider);
+  Object.keys(__contracts__).forEach(function(contract_name) {
+    window[contract_name].setProvider(window.web3.currentProvider);
   });
 });
 
