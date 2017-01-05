@@ -88,14 +88,6 @@ window.onload = function() {
         return;
       }
 
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-      accounts = accs;
-      account = accounts[0];
-
       fetchData('payrolls', fetchPayrolls);
     });
   });
