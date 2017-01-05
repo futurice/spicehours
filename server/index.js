@@ -21,10 +21,12 @@ app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + '/public'));
+app.use('/admin', express.static(__dirname + '/../build'));
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(pubtkt());
-app.use('/api/', restapi);
+app.use('/api', restapi);
 
 // FIXME: Should not be debug in production
 winston.level = 'debug';
