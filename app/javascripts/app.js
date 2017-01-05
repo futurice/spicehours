@@ -7,7 +7,9 @@ var PayrollList = React.createClass({
   render: function() {
     return React.createElement('ul', {},
       this.props.payrolls.map(function(payroll) {
-        return React.createElement('li', { key: payroll.address }, payroll.address);
+        return React.createElement('li', { key: payroll.address },
+          payroll.address + ', processed: ' + payroll.processed + ', locked: ' + payroll.locked
+        );
       })
     );
   }
