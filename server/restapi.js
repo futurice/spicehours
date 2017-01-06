@@ -173,7 +173,8 @@ router.post('/hours/', (req, res, next) => {
 
   const hours = SpiceHours.deployed();
   user.getUser(req.pubtkt.uid)
-    .then(user => userObj = user || req.pubtkt.uid)
+    .then(user => userObj = user)
+    .catch(err => userObj = req.pubtkt.uid)
     .then(() => {
       if (common.urlRegex.test(title)) {
         return bitly.shortenURL(title)
