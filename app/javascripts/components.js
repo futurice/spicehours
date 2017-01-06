@@ -14,9 +14,11 @@
       payroll: React.PropTypes.object.isRequired
     },
     render: function() {
-      var entries = this.props.payroll.entries;
-      var processed = this.props.payroll.processed;
-      if (!entries) {
+      var payroll = this.props.payroll;
+      var entriesLoading = payroll.entriesLoading;
+      var entries = payroll.entries;
+      var processed = payroll.processed;
+      if (entriesLoading || !entries) {
         return React.createElement('div', {}, 'Loading...');
       }
 

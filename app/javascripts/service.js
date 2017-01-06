@@ -37,6 +37,8 @@
   function fetchPayrolls() {
     if (_.get('payrollsLoading', state))
       return Promise.resolve();
+    if (_.get('payrolls', state))
+      return Promise.resolve();
 
     state = _.assoc('payrollsLoading', true, state);
     requestRender();
@@ -79,8 +81,13 @@
   }
 
   function fetchPayrollEntries(address) {
+    if (_.get(['payrolls', address, 'entriesLoading'], state))
+      return Promise.resolve();
     if (_.get(['payrolls', address, 'entries'], state))
       return Promise.resolve();
+
+    state = _.assoc(['payrolls', address, 'entriesLoading'], true, state);
+    requestRender();
 
     var payroll = SpicePayroll.at(address);
     return payroll.entryCount()
@@ -92,6 +99,10 @@
       })
       .then(function(entries) {
         state = _.assoc(['payrolls', address, 'entries'], entries, state);
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc(['payrolls', address, 'entriesLoading'], false, state);
       })
       .then(requestRender);
   }
