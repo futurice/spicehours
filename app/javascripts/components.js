@@ -9,6 +9,12 @@
     }
   });
 
+  var Header = React.createClass({
+    render: function() {
+      return React.createElement('h1', {}, 'SpiceHours Admin UI');
+    }
+  });
+
   var AccountInfo = React.createClass({
     propTypes: {
       account: React.PropTypes.object
@@ -54,8 +60,8 @@
         React.createElement('thead', {},
           React.createElement('tr', {},
             React.createElement('th', {}, 'User'),
-            React.createElement('th', {}, 'Duration'),
-            processed && React.createElement('th', {}, 'Payout')
+            React.createElement('th', {}, 'Duration (seconds)'),
+            processed && React.createElement('th', {}, 'Payout (euros)')
           )
         ),
         React.createElement('tbody', {},
@@ -166,6 +172,7 @@
         );
       } else {
         return React.createElement('div', { className: 'container' },
+          React.createElement(Header, {}),
           React.createElement(AccountInfo, { account: state.selectedAccount }),
           React.createElement(PayrollAccordion, {
             payrolls: _.reverse(_.values(state.payrolls))
