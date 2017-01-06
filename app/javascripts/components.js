@@ -11,6 +11,9 @@
       }
 
       return React.createElement('table', { className: 'table' },
+        React.createElement('caption', {},
+          'Total of ' + entries.length + ' users marked hours to this payroll'
+        ),
         React.createElement('thead', {},
           React.createElement('tr', {},
             React.createElement('th', {}, 'User'),
