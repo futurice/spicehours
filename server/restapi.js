@@ -128,6 +128,7 @@ router.get('/profile', (req, res, next) => {
   const hours = SpiceHours.deployed();
   const rates = SpiceRates.deployed();
   user.getUser(username)
+    .catch(err => { return { username }; })
     .then(userObj => output.user = userObj)
     .then(() => hours.payrollCount())
     .then(count => hours.payrolls(count.minus(1)))

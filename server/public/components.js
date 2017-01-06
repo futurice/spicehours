@@ -109,7 +109,7 @@
     },
     render: function() {
       var profile = this.props.profile;
-      var name = profile.user && profile.user.first_name || '(unknown)';
+      var name = profile.user && (profile.user.first_name || profile.user.username) || '(unknown)';
       var status = (profile.unpaidPercentage !== undefined && profile.unpaidPercentage !== 0)
         ? (100 - profile.unpaidPercentage) + '% part-time'
         : 'full-time';
