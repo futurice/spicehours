@@ -1,5 +1,16 @@
 (function(context) {
 
+  function formatDateTime(timestamp) {
+    var formatter = new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return formatter.format(new Date(timestamp * 1000));
+  }
+
   var LoadingScreen = React.createClass({
     render: function() {
       return React.createElement('div',
@@ -115,6 +126,10 @@
               },
               address
             )
+          ),
+          React.createElement('span', {},
+            'From ' + formatDateTime(payroll.fromTimestamp) +
+            (payroll.toTimestamp ? ' until ' + formatDateTime(payroll.toTimestamp) : '')
           )
         ),
         React.createElement('div',

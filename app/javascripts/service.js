@@ -85,17 +85,38 @@
     return hours.payrolls(idx)
       .then(function(address) {
         var payroll = SpicePayroll.at(address);
+        var fromBlockPromise = payroll.fromBlock();
+        var toBlockPromise = payroll.toBlock();
+        function getBlockTimestamp(blockNumber) {
+          if (blockNumber.isZero()) return;
+          return new Promise(function(resolve, reject) {
+            web3.eth.getBlock(blockNumber, function(err, block) {
+              if (err) return reject(err);
+              resolve(block.timestamp);
+            });
+          });
+        }
         return Promise.all([
           payroll.processed(),
           payroll.locked(),
-          payroll.entryCount()
+          fromBlockPromise,
+          fromBlockPromise.then(getBlockTimestamp),
+          toBlockPromise,
+          toBlockPromise.then(getBlockTimestamp)
         ]).then(function(values) {
-          return {
+          var fields = {
             index: idx,
             address: payroll.address,
             processed: values[0],
-            locked: values[1]
+            locked: values[1],
+            fromBlock: values[2].toNumber(),
+            fromTimestamp: values[3]
           };
+          if (fields.processed) {
+            fields.toBlock = values[4].toNumber();
+            fields.toTimestamp = values[5];
+          }
+          return fields;
         });
       });
   }
