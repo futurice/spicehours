@@ -4,6 +4,8 @@ module.exports = {
     "app.js": {
       "files": [
         "javascripts/bootstrap.js",
+        "javascripts/service.js",
+        "javascripts/components.js",
         "javascripts/app.js"
       ],
       "post-process": [
