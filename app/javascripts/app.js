@@ -31,13 +31,8 @@ window.onload = function() {
       alert("Network ID " + network_id + " is not found in all contracts");
       return;
     }
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
-        alert("There was an error fetching your accounts.");
-        return;
-      }
 
-      Service.fetchPayrolls().then(function() { render(); });
-    });
+    Service.fetchAccounts();
+    Service.fetchPayrolls();
   });
 }

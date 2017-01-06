@@ -11,7 +11,73 @@
   }
 
   function errorHandler(err) {
+    console.log(err);
     requestRender();
+  }
+
+  function fetchAccounts() {
+    if (_.get('accountsLoading', state))
+      return Promise.resolve();
+    if (_.get('accounts', state))
+      return Promise.resolve();
+
+    state = _.assoc('accountsLoading', true, state);
+    requestRender();
+
+    var members = SpiceMembers.deployed();
+    return Promise.resolve()
+      .then(function() {
+        return new Promise(function(resolve, reject) {
+          web3.eth.getAccounts(function(err, accs) {
+            if (err) return reject(err);
+            resolve(accs);
+          });
+        });
+      })
+      .then(function(accounts) {
+        return Promise.all(
+          accounts.map(function(address) {
+            return members.memberLevel(address)
+          })
+        ).then(function(memberLevels) {
+          return _.map(
+            function(pair) { return { address: pair[0], level: pair[1].toNumber() } },
+            _.filter(
+              function(pair) { return !pair[1].isZero(); },
+              _.zip(accounts, memberLevels)
+            )
+          );
+        });
+      })
+      .then(function(accounts) {
+        return Promise.all(
+          accounts.map(function(account) {
+            return Promise.all([
+              members.memberId(account.address),
+              members.memberInfo(account.address)
+            ]).then(function(values) {
+              var fields = {};
+              fields.id = values[0].toNumber();
+              if (!/0x0{64}/.test(values[1])) {
+                fields.info = values[1];
+              }
+              return _.assign(account, fields);
+            });
+          })
+        );
+      })
+      .then(function(accounts) {
+        return _.sortBy([function(account) { return -account.level; }], accounts);
+      })
+      .then(function(accounts) {
+        state = _.assoc('accounts', accounts, state);
+        state = _.assoc('selectedAccount', accounts[0], state);
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc('accountsLoading', false, state);
+      })
+      .then(requestRender);
   }
 
   function fetchPayroll(idx) {
@@ -109,6 +175,7 @@
 
   context.Service = {
     getState: getState,
+    fetchAccounts: fetchAccounts,
     fetchPayrolls: fetchPayrolls,
     fetchPayrollEntries: fetchPayrollEntries
   };

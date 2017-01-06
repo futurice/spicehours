@@ -9,6 +9,31 @@
     }
   });
 
+  var AccountInfo = React.createClass({
+    propTypes: {
+      account: React.PropTypes.object
+    },
+    render: function() {
+      var account = this.props.account;
+      if (account) {
+        var level;
+        switch(account.level) {
+        case 3: level = 'Director'; break;
+        case 2: level = 'Manager'; break;
+        case 1: level = 'Member'; break;
+        default: level = 'None'; break;
+        }
+        return React.createElement('div', {},
+          'Account ' + account.address + ' selected, access level: ' + level + ''
+        );
+      } else {
+        return React.createElement('div', {},
+          'No suitable account found, using read-only mode'
+        );
+      }
+    }
+  });
+
   var PayrollContent = React.createClass({
     propTypes: {
       payroll: React.PropTypes.object.isRequired
@@ -135,12 +160,13 @@
         return React.createElement(LoadingScreen, {},
           'Initializing Ethereum...'
         );
-      } else if (state.payrollsLoading) {
+      } else if (state.accountsLoading || state.payrollsLoading) {
         return React.createElement(LoadingScreen, {},
           'Fetching data...'
         );
       } else {
         return React.createElement('div', { className: 'container' },
+          React.createElement(AccountInfo, { account: state.selectedAccount }),
           React.createElement(PayrollAccordion, {
             payrolls: _.reverse(_.values(state.payrolls))
           })
