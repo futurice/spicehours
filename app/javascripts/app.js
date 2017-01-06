@@ -1,5 +1,5 @@
 function render() {
-  var payrollList = React.createElement(Components.Main, { state: Service.getState() });
+  var payrollList = React.createElement(MainComponent, { state: Service.getState() });
   ReactDOM.render(payrollList, document.getElementById('root'));
 }
 
@@ -8,6 +8,8 @@ window.addEventListener('render', function(e) {
 });
 
 window.onload = function() {
+  render();
+
   web3.version.getNetwork(function(err, result) {
     if (err) {
       alert("Error finding network: " + err.toString());

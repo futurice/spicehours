@@ -1,4 +1,14 @@
 (function(context) {
+
+  var LoadingScreen = React.createClass({
+    render: function() {
+      return React.createElement('div',
+        { className: 'loading-screen' },
+        React.createElement('h3', {}, this.props.children)
+      );
+    }
+  });
+
   var PayrollContent = React.createClass({
     propTypes: {
       payroll: React.PropTypes.object.isRequired
@@ -113,22 +123,29 @@
     }
   });
 
-  var Main = React.createClass({
+  var MainComponent = React.createClass({
     propTypes: {
       state: React.PropTypes.object.isRequired
     },
     render: function() {
-      return React.createElement('div', { className: 'container' },
-        React.createElement(PayrollAccordion, {
-          payrolls: _.reverse(_.values(this.props.state.payrolls))
-        })
-      );
+      var state = this.props.state;
+      if (_.isEmpty(state)) {
+        return React.createElement(LoadingScreen, {},
+          'Initializing Ethereum...'
+        );
+      } else if (state.payrollsLoading) {
+        return React.createElement(LoadingScreen, {},
+          'Fetching data...'
+        );
+      } else {
+        return React.createElement('div', { className: 'container' },
+          React.createElement(PayrollAccordion, {
+            payrolls: _.reverse(_.values(state.payrolls))
+          })
+        );
+      }
     }
   });
 
-  context.Components = {
-    PayrollPanel: PayrollPanel,
-    PayrollAccordion: PayrollAccordion,
-    Main: Main
-  };
+  context.MainComponent = MainComponent;
 })(window);

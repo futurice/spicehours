@@ -10,6 +10,10 @@
     return state;
   }
 
+  function errorHandler(err) {
+    requestRender();
+  }
+
   function fetchPayroll(idx) {
     var hours = SpiceHours.deployed();
     return hours.payrolls(idx)
@@ -31,6 +35,12 @@
   }
 
   function fetchPayrolls() {
+    if (_.get('payrollsLoading', state))
+      return Promise.resolve();
+
+    state = _.assoc('payrollsLoading', true, state);
+    requestRender();
+
     var hours = SpiceHours.deployed();
     return hours.payrollCount()
       .then(function(payrollCount) {
@@ -41,6 +51,10 @@
       .then(function(payrolls) {
         var payrollsObject = _.keyBy('address', payrolls);
         state = _.assoc('payrolls', payrollsObject, state);
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc('payrollsLoading', false, state);
       })
       .then(requestRender);
   }
