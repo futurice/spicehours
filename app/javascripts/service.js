@@ -80,6 +80,47 @@
       .then(requestRender);
   }
 
+  function selectAccount(account) {
+    state = _.assoc('selectedAccount', account, state);
+    requestRender();
+  }
+
+  function markHours(description, duration) {
+    var hours = SpiceHours.deployed();
+    return Promise.resolve()
+      .then(function() {
+        if (_.get('markingHours', state))
+          throw new Error('Hour marking already in progress');
+        if (!_.get('selectedAccount.info', state))
+          throw new Error('No valid account selected, cannot mark hours');
+
+        var info = _.get('selectedAccount.info', state);
+        var descriptionBytes32 = web3.fromUtf8(description);
+        if (descriptionBytes32.length > 66) {
+          throw new Error('Description too long');
+        } else if (descriptionBytes32.length < 66) {
+          descriptionBytes32 += Array(66 - descriptionBytes32.length + 1).join('0');
+        }
+
+        if (!_.isInteger(duration)) {
+          throw new Error('Duration is not an integer');
+        }
+
+        state = _.assoc('markingHours', true, state);
+        requestRender();
+
+        return hours.markHours(info, descriptionBytes32, duration, {
+          from: _.get('selectedAccount.address', state),
+          gas: 150000
+        });
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc('markingHours', false, state);
+      })
+      .then(requestRender);
+  }
+
   function fetchPayroll(idx) {
     var hours = SpiceHours.deployed();
     return hours.payrolls(idx)
@@ -197,6 +238,8 @@
   context.Service = {
     getState: getState,
     fetchAccounts: fetchAccounts,
+    selectAccount: selectAccount,
+    markHours: markHours,
     fetchPayrolls: fetchPayrolls,
     fetchPayrollEntries: fetchPayrollEntries
   };

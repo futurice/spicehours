@@ -10,3 +10,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.account-selector {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.account-level {
+  margin: 7px;
+}

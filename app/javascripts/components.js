@@ -34,28 +34,143 @@
     }
   });
 
-  var AccountInfo = React.createClass({
+  var AccountSelector = React.createClass({
     propTypes: {
-      account: React.PropTypes.object
+      accounts: React.PropTypes.array.isRequired,
+      selectedAccount: React.PropTypes.object
+    },
+    handleChange: function(event) {
+      var account = _.find(function(account) {
+        return account.address === event.target.value;
+      }, this.props.accounts);
+      if (account) Service.selectAccount(account);
     },
     render: function() {
-      var account = this.props.account;
-      if (account) {
-        var level;
+      var accounts = this.props.accounts;
+      var selectedAccount = this.props.selectedAccount || accounts[0];
+
+      function getAccountLevel(account) {
         switch(account.level) {
-        case 3: level = 'Director'; break;
-        case 2: level = 'Manager'; break;
-        case 1: level = 'Member'; break;
-        default: level = 'None'; break;
+          case 3: return 'Director';
+          case 2: return 'Manager';
+          case 1: return 'Member';
+          default: return 'None';
         }
-        return React.createElement('div', {},
-          'Account ' + account.address + ' selected, access level: ' + level + ''
+      }
+
+      if (accounts.length > 0) {
+        return React.createElement('div', { className: 'account-selector panel panel-default' },
+          React.createElement('div', { className: 'panel-heading' },
+            React.createElement('strong', {}, 'Select Account:')
+          ),
+          React.createElement('div', { className: 'panel-body' },
+            React.createElement('div', { className: 'row' },
+              React.createElement('div', { className: 'col-sm-6' },
+                React.createElement('select',
+                  {
+                    className: 'form-control',
+                    value: selectedAccount.address,
+                    onChange: this.handleChange
+                  },
+                  accounts.map(function(account) {
+                    var isSelected = _.isEqual(account, selectedAccount);
+                    return React.createElement('option',
+                      { key: account.address, value: account.address },
+                      account.address
+                    );
+                  })
+                )
+              ),
+              React.createElement('div', { className: 'col-sm-6' },
+                React.createElement('div', { className: 'account-level' },
+                  'Account level: ' + getAccountLevel(selectedAccount)
+                )
+              )
+            )
+          )
         );
       } else {
-        return React.createElement('div', {},
-          'No suitable account found, using read-only mode'
+        return React.createElement('div', { className: 'account-selector panel panel-default' },
+          React.createElement('div', { className: 'panel-heading' },
+            React.createElement('strong', {}, 'No account found, using read-only mode')
+          )
         );
       }
+    }
+  });
+
+  var HourMarker = React.createClass({
+    propTypes: {
+      selectedAccount: React.PropTypes.object,
+      markingHours: React.PropTypes.bool
+    },
+    getInitialState: function() {
+      return {
+        description: '',
+        duration: 60
+      };
+    },
+    handleDescriptionChange: function(event) {
+      this.setState({ description: event.target.value });
+    },
+    handleDurationChange: function(event) {
+      this.setState({ duration: parseInt(event.target.value, 10) });
+    },
+    handleSubmit: function(event) {
+      // Convert duration to seconds instead of minutes
+      Service.markHours(this.state.description, this.state.duration * 60);
+    },
+    render: function() {
+      var selectedAccount = this.props.selectedAccount;
+      if (!_.get('info', selectedAccount)) return null;
+
+      var markingHours = this.props.markingHours;
+      return React.createElement('div', { className: 'hour-marker panel panel-default' },
+        React.createElement('div', { className: 'panel-heading' },
+          React.createElement('strong', {}, 'Mark Hours:')
+        ),
+        React.createElement('div', { className: 'panel-body' },
+          React.createElement('div', { className: 'row' },
+            React.createElement('div', { className: 'col-sm-6' },
+              React.createElement('label', { htmlFor: 'mark-description' }, 'Description'),
+              React.createElement('input', {
+                id: 'mark-description',
+                type: 'text',
+                value: this.state.description,
+                disabled: markingHours,
+                className: 'form-control',
+                onChange: this.handleDescriptionChange
+              })
+            ),
+            React.createElement('div', { className: 'col-sm-4' },
+              React.createElement('label', { htmlFor: 'mark-duration' }, 'Duration (minutes)'),
+              React.createElement('input', {
+                id: 'mark-duration',
+                type: 'number',
+                pattern: '\d*',
+                value: this.state.duration,
+                disabled: markingHours,
+                className: 'form-control',
+                onChange: this.handleDurationChange
+              })
+            ),
+            React.createElement('div', { className: 'col-sm-2' },
+              React.createElement('label', {}, '\u00a0'),
+              React.createElement('input', {
+                type: 'submit',
+                value: 'Submit',
+                disabled: markingHours,
+                className: 'form-control btn btn-default',
+                onClick: this.handleSubmit
+              })
+            )
+          ),
+          markingHours && React.createElement('div',
+            { style: { marginTop: '20px', textAlign: 'center' } },
+            'Marking transaction in progress, please wait...'
+          )
+        )
+      );
     }
   });
 
@@ -120,7 +235,7 @@
       var address = payroll.address;
       var headingId = 'heading-' + address;
       var collapseId = 'collapse-' + address;
-      return React.createElement('div', { className: 'panel panel-default' },
+        return React.createElement('div', { className: 'panel panel-default' },
         React.createElement('div', { id: headingId, className: 'panel-heading', role: 'tab' },
           React.createElement('h4', { className: 'panel-title payroll-title' },
             React.createElement('a',
@@ -195,8 +310,17 @@
         );
       } else {
         return React.createElement('div', { className: 'container' },
-          React.createElement(Header, {}),
-          React.createElement(AccountInfo, { account: state.selectedAccount }),
+          React.createElement(Header),
+          React.createElement('h3', {}, 'Account Information'),
+          React.createElement(AccountSelector, {
+            accounts: state.accounts,
+            selectedAccount: state.selectedAccount
+          }),
+          React.createElement(HourMarker, {
+            selectedAccount: state.selectedAccount,
+            markingHours: state.markingHours
+          }),
+          React.createElement('h3', {}, 'Monthly Payrolls'),
           React.createElement(PayrollAccordion, {
             payrolls: _.reverse(_.values(state.payrolls))
           })
