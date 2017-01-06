@@ -11,6 +11,14 @@
     return formatter.format(new Date(timestamp * 1000));
   }
 
+  function formatEuros(value) {
+    var formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'EUR'
+    });
+    return formatter.format(value);
+  }
+
   var LoadingScreen = React.createClass({
     render: function() {
       return React.createElement('div',
@@ -71,16 +79,16 @@
         React.createElement('thead', {},
           React.createElement('tr', {},
             React.createElement('th', {}, 'User'),
-            React.createElement('th', {}, 'Duration (seconds)'),
-            processed && React.createElement('th', {}, 'Payout (euros)')
+            React.createElement('th', {}, 'Duration (minutes)'),
+            processed && React.createElement('th', {}, 'Payout')
           )
         ),
         React.createElement('tbody', {},
           entries.map(function(entry) {
             return React.createElement('tr', { key: entry.info },
               React.createElement('td', {}, entry.info.substr(2, 8)),
-              React.createElement('td', {}, entry.duration),
-              processed && React.createElement('td', {}, entry.payout)
+              React.createElement('td', {}, entry.duration / 60),
+              processed && React.createElement('td', {}, formatEuros(entry.payout))
             );
           })
         )
