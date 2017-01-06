@@ -19,14 +19,22 @@ function isFUMUser(username) {
     .then(user => !!user);
 }
 
+function fetchEmployees() {
+  return client.get(`/list/employees/`)
+    .then(res => res.data);
+}
+
 let employeesCache = null;
 function enableCacheInvalidation(interval) {
-  function clearCache() {
-    winston.info('Clearing user cache');
-    employeesCache = null;
-    setTimeout(clearCache, interval);
+  function updateCache() {
+    winston.info('Updating user cache');
+    fetchEmployees().then(employees => {
+      employeesCache = employees;
+      winston.info('Updated user cache');
+    });
+    setTimeout(updateCache, interval);
   }
-  clearCache();
+  updateCache();
 }
 enableCacheInvalidation(900000); // 15 minutes cache
 
@@ -38,8 +46,7 @@ function getFUMUser(username) {
     employeesPromise = employeesCache;
   } else {
     winston.info(`Fetching FUM employees from the server`);
-    employeesPromise = employeesCache = client.get(`/list/employees/`)
-      .then(res => res.data)
+    employeesPromise = employeesCache = fetchEmployees()
       .catch(err => {
         employeesCache = null;
         return Promise.reject(err);
