@@ -6,13 +6,32 @@
     context.dispatchEvent(renderEvent);
   }
 
+  function errorHandler(err) {
+    console.log(err);
+    requestRender();
+  }
+
   function getState() {
     return state;
   }
 
-  function errorHandler(err) {
-    console.log(err);
-    requestRender();
+  function attachEvents() {
+    var hours = SpiceHours.deployed();
+    var markHoursEvent = hours.MarkHours();
+    markHoursEvent.watch(function(err, event) {
+      // FIXME: The event should have payroll address :(
+      var index = _.size(state.payrolls) - 1;
+      var findAddress = _.pipe([
+        _.values,
+        _.find(function(payroll) { return (payroll.index === index); }),
+        _.get('address')
+      ]);
+      var address = findAddress(state.payrolls);
+      if (address) {
+        state = _.assoc(['payrolls', address, 'entriesUpdated'], true, state);
+        fetchPayrollEntries(address);
+      }
+    });
   }
 
   function fetchAccounts() {
@@ -211,8 +230,13 @@
   function fetchPayrollEntries(address) {
     if (_.get(['payrolls', address, 'entriesLoading'], state))
       return Promise.resolve();
-    if (_.get(['payrolls', address, 'entries'], state))
-      return Promise.resolve();
+    if (_.get(['payrolls', address, 'entries'], state)) {
+      // Check if entries are updated and we need to reload anyway
+      if (!_.get(['payrolls', address, 'entriesUpdated'], state)) {
+        return Promise.resolve();
+      }
+      state = _.assoc(['payrolls', address, 'entriesUpdated'], false, state);
+    }
 
     state = _.assoc(['payrolls', address, 'entriesLoading'], true, state);
     requestRender();
@@ -237,6 +261,7 @@
 
   context.Service = {
     getState: getState,
+    attachEvents: attachEvents,
     fetchAccounts: fetchAccounts,
     selectAccount: selectAccount,
     markHours: markHours,

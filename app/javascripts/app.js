@@ -32,6 +32,7 @@ window.onload = function() {
       return;
     }
 
+    Service.attachEvents();
     Service.fetchAccounts();
     Service.fetchPayrolls();
   });
