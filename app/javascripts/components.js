@@ -1,4 +1,5 @@
 (function(context) {
+  var LEVEL_DIRECTOR = 3;
 
   function formatDateTime(timestamp) {
     var formatter = new Intl.DateTimeFormat(undefined, {
@@ -211,9 +212,95 @@
     }
   });
 
+  var ProcessPayrollButton = React.createClass({
+    propTypes: {
+      selectedAccount: React.PropTypes.object,
+      payroll: React.PropTypes.object.isRequired,
+      processingPayroll: React.PropTypes.bool
+    },
+    getInitialState: function() {
+      return {
+        confirmingClick: false
+      };
+    },
+    handleProcess: function(event) {
+      this.setState({
+        confirmingClick: true
+      });
+    },
+    handleConfirm: function(event) {
+      if (this.state.confirmingClick) {
+        // Hardcoded 30 hours as max duration
+        var maxDuration = 30*60*60;
+        Service.processPayroll(maxDuration);
+      }
+    },
+    render: function() {
+      var payroll = this.props.payroll;
+      var processingPayroll = this.props.processingPayroll;
+      var confirmingClick = this.state.confirmingClick;
+      if (!payroll.processed) {
+        if (processingPayroll) {
+          return React.createElement('button', {
+            className: 'btn btn-default disabled',
+            type: 'submit'
+          }, 'Processing Payroll...');
+        } else if (confirmingClick) {
+          return React.createElement('button', {
+            className: 'btn btn-warning',
+            type: 'submit',
+            onClick: this.handleConfirm
+          }, 'Confirm Process');
+        } else {
+          return React.createElement('button', {
+            className: 'btn btn-default',
+            type: 'submit',
+            onClick: this.handleProcess
+          }, 'Process Payroll');
+        }
+      }
+      return null;
+    }
+  });
+
+  var LockPayrollButton = React.createClass({
+    propTypes: {
+      selectedAccount: React.PropTypes.object,
+      payroll: React.PropTypes.object.isRequired
+    },
+    handleClick: function(event) {
+      Service.lockPayroll(this.props.payroll.address);
+    },
+    render: function() {
+      var payroll = this.props.payroll;
+      if (payroll.processed && !payroll.locked) {
+        if (payroll.lockingPayroll) {
+          return React.createElement('button', {
+            className: 'btn btn-default disabled',
+            type: 'submit'
+          }, 'Locking Payroll...');
+        } else {
+          return React.createElement('button', {
+            className: 'btn btn-default',
+            type: 'submit',
+            onClick: this.handleClick
+          }, 'Lock Payroll');
+        }
+      } else if (payroll.locked) {
+        return React.createElement('span', {
+          className: 'glyphicon glyphicon-lock',
+          'aria-hidden': true
+        });
+      }
+      return null;
+    }
+  });
+
   var PayrollPanel = React.createClass({
     propTypes: {
+      selectedAccount: React.PropTypes.object,
       payroll: React.PropTypes.object.isRequired,
+      processingPayroll: React.PropTypes.bool,
       expanded: React.PropTypes.bool,
       parent: React.PropTypes.string,
     },
@@ -229,30 +316,52 @@
         .off('show.bs.collapse');
     },
     render: function() {
+      var selectedAccount = this.props.selectedAccount;
       var payroll = this.props.payroll;
+      var processingPayroll = this.props.processingPayroll;
       var expanded = !!this.props.expanded;
 
       var address = payroll.address;
       var headingId = 'heading-' + address;
       var collapseId = 'collapse-' + address;
-        return React.createElement('div', { className: 'panel panel-default' },
+      var isDirector = (selectedAccount.level >= LEVEL_DIRECTOR);
+      var isProcessed = payroll.processed;
+      var isLocked = payroll.locked;
+      return React.createElement('div', { className: 'panel panel-default' },
         React.createElement('div', { id: headingId, className: 'panel-heading', role: 'tab' },
-          React.createElement('h4', { className: 'panel-title payroll-title' },
-            React.createElement('a',
-              {
-                role: 'button',
-                href: '#' + collapseId,
-                'data-toggle': 'collapse',
-                'data-parent': this.props.parent,
-                'aria-expanded': '' + expanded,
-                'aria-controls': collapseId
-              },
-              address
+          React.createElement('div', { className: 'row' },
+            React.createElement('div', { className: 'col-xs-8' },
+              React.createElement('h4', { className: 'panel-title payroll-title' },
+                React.createElement('a',
+                  {
+                    role: 'button',
+                    href: '#' + collapseId,
+                    'data-toggle': 'collapse',
+                    'data-parent': this.props.parent,
+                    'aria-expanded': '' + expanded,
+                    'aria-controls': collapseId
+                  },
+                  address
+                )
+              ),
+              React.createElement('span', {},
+                'From ' + formatDateTime(payroll.fromTimestamp) +
+                (payroll.toTimestamp ? ' until ' + formatDateTime(payroll.toTimestamp) : '')
+              )
+            ),
+            React.createElement('div', { className: 'col-xs-4' },
+              isDirector && React.createElement('div', { className: 'pull-right' },
+                React.createElement(LockPayrollButton, {
+                  selectedAccount: selectedAccount,
+                  payroll: payroll
+                }),
+                React.createElement(ProcessPayrollButton, {
+                  selectedAccount: selectedAccount,
+                  payroll: payroll,
+                  processingPayroll: processingPayroll
+                })
+              )
             )
-          ),
-          React.createElement('span', {},
-            'From ' + formatDateTime(payroll.fromTimestamp) +
-            (payroll.toTimestamp ? ' until ' + formatDateTime(payroll.toTimestamp) : '')
           )
         ),
         React.createElement('div',
@@ -272,10 +381,14 @@
 
   var PayrollAccordion = React.createClass({
     propTypes: {
-      payrolls: React.PropTypes.array
+      selectedAccount: React.PropTypes.object,
+      payrolls: React.PropTypes.array,
+      processingPayroll: React.PropTypes.bool
     },
     render: function() {
       var accordionId = 'payroll-accordion';
+      var selectedAccount = this.props.selectedAccount;
+      var processingPayroll = this.props.processingPayroll;
       return React.createElement('div',
         {
           id: accordionId,
@@ -286,7 +399,9 @@
         this.props.payrolls.map(function(payroll, idx) {
           return React.createElement(PayrollPanel, {
             key: payroll.address,
+            selectedAccount: selectedAccount,
             payroll: payroll,
+            processingPayroll: processingPayroll,
             parent: '#' + accordionId
           });
         })
@@ -322,7 +437,9 @@
           }),
           React.createElement('h3', {}, 'Monthly Payrolls'),
           React.createElement(PayrollAccordion, {
-            payrolls: _.reverse(_.values(state.payrolls))
+            selectedAccount: state.selectedAccount,
+            payrolls: _.reverse(_.values(state.payrolls)),
+            processingPayroll: state.processingPayroll
           })
         );
       }

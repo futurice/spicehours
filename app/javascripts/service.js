@@ -140,6 +140,55 @@
       .then(requestRender);
   }
 
+  function processPayroll(maxDuration) {
+    var hours = SpiceHours.deployed();
+    var rates = SpiceHours.deployed();
+    return Promise.resolve()
+      .then(function() {
+        state = _.assoc('processingPayroll', true, state);
+      })
+      .then(requestRender)
+      .then(function() {
+        return hours.processPayroll(rates.address, maxDuration, {
+          from: _.get('selectedAccount.address', state),
+          gas: 3141592 // Maximum possible gas amount
+        });
+      })
+      .then(function() {
+        // FIXME: Should be in event handler but doesn't work well there
+        fetchPayrolls(true);
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc('processingPayroll', false, state);
+      })
+      .then(requestRender);
+  }
+
+  function lockPayroll(address) {
+    var payroll = SpicePayroll.at(address);
+    return Promise.resolve()
+      .then(function() {
+        state = _.assoc(['payrolls', address, 'lockingPayroll'], true, state);
+      })
+      .then(requestRender)
+      .then(function() {
+        return payroll.lock({
+          from: _.get('selectedAccount.address', state),
+          gas: 50000
+        });
+      })
+      .then(function() {
+        // FIXME: Wrong place, should be watched in events but attaching is tricky
+        state = _.assoc(['payrolls', address, 'locked'], true, state);
+      })
+      .catch(errorHandler)
+      .then(function() {
+        state = _.assoc(['payrolls', address, 'lockingPayroll'], false, state);
+      })
+      .then(requestRender);
+  }
+
   function fetchPayroll(idx) {
     var hours = SpiceHours.deployed();
     return hours.payrolls(idx)
@@ -181,10 +230,10 @@
       });
   }
 
-  function fetchPayrolls() {
+  function fetchPayrolls(forceFetch) {
     if (_.get('payrollsLoading', state))
       return Promise.resolve();
-    if (_.get('payrolls', state))
+    if (_.get('payrolls', state) && !forceFetch)
       return Promise.resolve();
 
     state = _.assoc('payrollsLoading', true, state);
@@ -265,6 +314,8 @@
     fetchAccounts: fetchAccounts,
     selectAccount: selectAccount,
     markHours: markHours,
+    processPayroll: processPayroll,
+    lockPayroll: lockPayroll,
     fetchPayrolls: fetchPayrolls,
     fetchPayrollEntries: fetchPayrollEntries
   };
