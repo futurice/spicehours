@@ -286,7 +286,17 @@
             onClick: this.handleClick
           }, 'Lock Payroll');
         }
-      } else if (payroll.locked) {
+      }
+      return null;
+    }
+  });
+
+  var PayrollStatus = React.createClass({
+    propTypes: {
+      payroll: React.PropTypes.object.isRequired
+    },
+    render: function() {
+      if (this.props.payroll.locked) {
         return React.createElement('span', {
           className: 'glyphicon glyphicon-lock',
           'aria-hidden': true
@@ -324,9 +334,7 @@
       var address = payroll.address;
       var headingId = 'heading-' + address;
       var collapseId = 'collapse-' + address;
-      var isDirector = (selectedAccount.level >= LEVEL_DIRECTOR);
-      var isProcessed = payroll.processed;
-      var isLocked = payroll.locked;
+      var isDirector = (_.get('level', selectedAccount) >= LEVEL_DIRECTOR);
       return React.createElement('div', { className: 'panel panel-default' },
         React.createElement('div', { id: headingId, className: 'panel-heading', role: 'tab' },
           React.createElement('div', { className: 'row' },
@@ -350,15 +358,18 @@
               )
             ),
             React.createElement('div', { className: 'col-xs-4' },
-              isDirector && React.createElement('div', { className: 'pull-right' },
-                React.createElement(LockPayrollButton, {
+              React.createElement('div', { className: 'pull-right' },
+                isDirector && React.createElement(LockPayrollButton, {
                   selectedAccount: selectedAccount,
                   payroll: payroll
                 }),
-                React.createElement(ProcessPayrollButton, {
+                isDirector && React.createElement(ProcessPayrollButton, {
                   selectedAccount: selectedAccount,
                   payroll: payroll,
                   processingPayroll: processingPayroll
+                }),
+                React.createElement(PayrollStatus, {
+                  payroll: payroll
                 })
               )
             )

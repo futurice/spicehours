@@ -19,6 +19,8 @@
     var hours = SpiceHours.deployed();
     var markHoursEvent = hours.MarkHours();
     markHoursEvent.watch(function(err, event) {
+      if (err) return errorHandler(err);
+
       // FIXME: The event should have payroll address :(
       var index = _.size(state.payrolls) - 1;
       var findAddress = _.pipe([
@@ -88,11 +90,14 @@
       .then(function(accounts) {
         return _.sortBy([function(account) { return -account.level; }], accounts);
       })
+      .catch(function(err) {
+        errorHandler(err);
+        return [];
+      })
       .then(function(accounts) {
         state = _.assoc('accounts', accounts, state);
         state = _.assoc('selectedAccount', accounts[0], state);
       })
-      .catch(errorHandler)
       .then(function() {
         state = _.assoc('accountsLoading', false, state);
       })
