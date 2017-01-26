@@ -8,7 +8,7 @@ if (!config.FUM_USERNAME || !config.FUM_PASSWORD || !config.FUM_BASEURL) {
 }
 const client = axios.create({
   baseURL: config.FUM_BASEURL,
-  timeout: 1000,
+  timeout: 5000,
   auth: {
     username: config.FUM_USERNAME,
     password: config.FUM_PASSWORD
