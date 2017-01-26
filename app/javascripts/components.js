@@ -187,6 +187,12 @@
       if (entriesLoading || !entries) {
         return React.createElement('div', {}, 'Loading...');
       }
+      var totalDuration = entries.reduce(function(duration, entry) {
+        return duration + (entry.duration || 0);
+      }, 0);
+      var totalPayout = entries.reduce(function(payout, entry) {
+        return payout + (entry.payout || 0);
+      }, 0);
 
       return React.createElement('table', { className: 'table' },
         React.createElement('caption', {},
@@ -206,7 +212,12 @@
               React.createElement('td', {}, entry.duration / 60),
               processed && React.createElement('td', {}, formatEuros(entry.payout))
             );
-          })
+          }),
+          React.createElement('tr', {},
+            React.createElement('td', {}, React.createElement('b', {}, 'Total')),
+            React.createElement('td', {}, totalDuration / 60),
+            processed && React.createElement('td', {}, formatEuros(totalPayout))
+          )
         )
       );
     }
