@@ -147,7 +147,7 @@
 
   function processPayroll(maxDuration) {
     var hours = SpiceHours.deployed();
-    var rates = SpiceHours.deployed();
+    var rates = SpiceRates.deployed();
     return Promise.resolve()
       .then(function() {
         state = _.assoc('processingPayroll', true, state);
