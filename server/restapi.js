@@ -203,9 +203,11 @@ router.get('/hours/pending', (req, res, next) => {
 });
 
 router.get('/hours/events', (req, res, next) => {
-  const fromBlock = 0;
   const hours = SpiceHours.deployed();
-  getEvents(hours.allEvents, { fromBlock })
+  hours.payrollCount()
+    .then(count => hours.payrolls(count - 1))
+    .then(address => SpicePayroll.at(address).fromBlock())
+    .then(fromBlock => getEvents(hours.allEvents, { fromBlock }))
     .then(events => Promise.all(_.map(common.processEvent, events)))
     .then(events => res.json(events))
     .catch(next);
