@@ -2,6 +2,10 @@ const _ = require('lodash/fp');
 const axios = require('axios');
 const winston = require('winston');
 const config = require('./config');
+let staticEmployees = null;
+try {
+  staticEmployees = require('./employees.json');
+} catch(e) {}
 
 if (!config.FUM_USERNAME || !config.FUM_PASSWORD || !config.FUM_BASEURL) {
   throw new Error('No FUM username, password or host set in config');
@@ -25,13 +29,17 @@ function fetchEmployees() {
     .then(res => res.data);
 }
 
-let employeesCache = null;
+let employeesCache = staticEmployees;
 function enableCacheInvalidation(interval) {
   function updateCache() {
     winston.info('Updating user cache');
     fetchEmployees().then(employees => {
-      employeesCache = employees;
-      winston.info('Updated user cache');
+      if (Array.isArray(employees)) {
+        employeesCache = employees;
+        winston.info('Updated user cache');
+      } else {
+        winston.info('Did not update cache because of invalid data');
+      }
     });
     setTimeout(updateCache, interval);
   }
