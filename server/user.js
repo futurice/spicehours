@@ -7,17 +7,43 @@ try {
   staticEmployees = require('./employees.json');
 } catch(e) {}
 
-if (!config.FUM_USERNAME || !config.FUM_PASSWORD || !config.FUM_BASEURL) {
-  throw new Error('No FUM username, password or host set in config');
+
+const hasFumCredentials = config.FUM_USERNAME && config.FUM_PASSWORD;
+const hasFumToken = config.FUM_TOKEN;
+if ((!hasFumCredentials && !hasFumToken) || !config.FUM_BASEURL) {
+  throw new Error('No FUM username, password or token or host set in config');
 }
-const client = axios.create({
-  baseURL: config.FUM_BASEURL,
-  timeout: 5000,
-  auth: {
-    username: config.FUM_USERNAME,
-    password: config.FUM_PASSWORD
+
+function createWithCredentials() {
+  if (!hasFumCredentials) {
+    throw new Error("createWithCredentials: panic!");
   }
-});
+
+  return axios.create({
+    baseURL: config.FUM_BASEURL,
+    timeout: 5000,
+    auth: {
+      username: config.FUM_USERNAME,
+      password: config.FUM_PASSWORD
+    }
+  });
+}
+
+function createWithToken() {
+  if (!hasFumToken) {
+    throw new Error("createWithToken: panic!");
+  }
+
+  return axios.create({
+    baseURL: config.FUM_BASEURL,
+    timeout: 5000,
+    headers: {
+      Authorization: config.FUM_TOKEN,
+    }
+  });
+}
+
+const client = hasFumCredentials ? createWithCredentials() : createWithToken();
 
 function isFUMUser(username) {
   return getFUMUser(username)
