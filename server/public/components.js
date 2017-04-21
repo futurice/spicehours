@@ -121,16 +121,16 @@
             src: 'chilicorn_no_text-256.png',
             alt: 'Chilicorn'
           }),
-          React.createElement(HoursForm, {
-            className: 'hours-form',
-            sendCallback: this.props.sendCallback,
-            errorCallback: this.props.errorCallback
-          }),
           React.createElement('br'),
           React.createElement('span', {}, 'Welcome'), ' ' + name, React.createElement('br'),
           React.createElement('span', {}, 'Your employee status is'), ' ' + status, React.createElement('br'),
           React.createElement('span', {}, 'This period you have marked'), ' ' + duration, React.createElement('br')
         ),
+        React.createElement(HoursForm, {
+          className: 'hours-form',
+          sendCallback: this.props.sendCallback,
+          errorCallback: this.props.errorCallback
+        }),
         React.createElement('div', { className: 'tx-status' },
           React.createElement(StatusBar, {
             transactions: this.props.transactions,
@@ -242,13 +242,13 @@
             onChange: this.descriptionChanged
           }),
           React.createElement('br'),
-          React.createElement('label')
-        ),
-        React.createElement('button', {
-          id: 'send',
-          htmlFor: 'send',
-          onClick: this.sendMarking
-        }, 'Send')
+          React.createElement('label'),
+          React.createElement('button', {
+            id: 'send',
+            htmlFor: 'send',
+            onClick: this.sendMarking
+          }, 'Send')
+        )
       );
     }
   });

@@ -70,10 +70,8 @@ body {
 }
 
 .hours-form {
-  position: relative;
-  top: 10px;
-  bottom: 10px;
-  float: right;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .hours-form > * {
@@ -96,13 +94,13 @@ body {
 }
 
 .hours-form input, .hours-form textarea {
-  width: 200px;
+  width: 400px;
   margin-top: 2px;
   margin-left: 2px;
 }
 
 .hours-form textarea {
-  height: 50px;
+  height: 150px;
   resize: none;
 }
 
@@ -125,9 +123,9 @@ body {
 }
 
 .hours-form button {
-  width: 60px;
-  margin: 10px;
-  vertical-align: middle;
+  width: 100px;
+  height: 50px;
+  background-color: #A5D6A7;
 }
 
 .tx-status > div {
@@ -156,11 +154,6 @@ body {
 }
 
 #main-content {
-  position: absolute;
-  top: 160px;
-  left: 0;
-  right: 0;
-  bottom: 0;
   overflow: hidden;
   overflow-y: scroll;
 }
