@@ -26,3 +26,13 @@ Accounts in use:
 Architecture diagram:
 
 ![SpiceHours Architecture](https://raw.githubusercontent.com/jvah/spicehours/master/doc/SpiceHours-architecture.png)
+
+## Development
+
+`npm run serve:dev` runs *admin ui*
+
+```sh
+cp server/config.sample.json server/config.json
+$EDITOR server/config.json
+npm run start
+```
