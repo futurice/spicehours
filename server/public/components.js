@@ -25,8 +25,8 @@
 
   var EventItem = React.createClass({
     propTypes: {
-      event: React.PropTypes.object.isRequired,
-      latestBlock: React.PropTypes.object
+      event: PropTypes.object.isRequired,
+      latestBlock: PropTypes.object
     },
     render: function() {
       var event = this.props.event;
@@ -67,8 +67,8 @@
 
   var EventList = React.createClass({
     propTypes: {
-      events: React.PropTypes.array.isRequired,
-      latestBlock: React.PropTypes.object
+      events: PropTypes.array.isRequired,
+      latestBlock: PropTypes.object
     },
     render: function() {
       var latestBlock = this.props.latestBlock;
@@ -81,8 +81,8 @@
 
   var StatusBar = React.createClass({
     propTypes: {
-      transactions: React.PropTypes.object.isRequired,
-      error: React.PropTypes.string
+      transactions: PropTypes.object.isRequired,
+      error: PropTypes.string
     },
     render: function() {
       var txCount = Object.keys(this.props.transactions).length;
@@ -100,12 +100,12 @@
 
   var TopContent = React.createClass({
     propTypes: {
-      profile: React.PropTypes.object.isRequired,
-      transactions: React.PropTypes.object.isRequired,
-      error: React.PropTypes.string,
+      profile: PropTypes.object.isRequired,
+      transactions: PropTypes.object.isRequired,
+      error: PropTypes.string,
 
-      sendCallback: React.PropTypes.func.isRequired,
-      errorCallback: React.PropTypes.func.isRequired
+      sendCallback: PropTypes.func.isRequired,
+      errorCallback: PropTypes.func.isRequired
     },
     render: function() {
       var profile = this.props.profile;
@@ -143,8 +143,8 @@
 
   var HoursForm = React.createClass({
     propTypes: {
-      sendCallback: React.PropTypes.func.isRequired,
-      errorCallback: React.PropTypes.func.isRequired
+      sendCallback: PropTypes.func.isRequired,
+      errorCallback: PropTypes.func.isRequired
     },
     getInitialState: function() {
       return {

@@ -37,8 +37,8 @@
 
   var AccountSelector = React.createClass({
     propTypes: {
-      accounts: React.PropTypes.array.isRequired,
-      selectedAccount: React.PropTypes.object
+      accounts: PropTypes.array.isRequired,
+      selectedAccount: PropTypes.object
     },
     handleChange: function(event) {
       var account = _.find(function(account) {
@@ -102,8 +102,8 @@
 
   var HourMarker = React.createClass({
     propTypes: {
-      selectedAccount: React.PropTypes.object,
-      markingHours: React.PropTypes.bool
+      selectedAccount: PropTypes.object,
+      markingHours: PropTypes.bool
     },
     getInitialState: function() {
       return {
@@ -177,7 +177,7 @@
 
   var PayrollContent = React.createClass({
     propTypes: {
-      payroll: React.PropTypes.object.isRequired
+      payroll: PropTypes.object.isRequired
     },
     render: function() {
       var payroll = this.props.payroll;
@@ -225,9 +225,9 @@
 
   var ProcessPayrollButton = React.createClass({
     propTypes: {
-      selectedAccount: React.PropTypes.object,
-      payroll: React.PropTypes.object.isRequired,
-      processingPayroll: React.PropTypes.bool
+      selectedAccount: PropTypes.object,
+      payroll: PropTypes.object.isRequired,
+      processingPayroll: PropTypes.bool
     },
     getInitialState: function() {
       return {
@@ -276,8 +276,8 @@
 
   var LockPayrollButton = React.createClass({
     propTypes: {
-      selectedAccount: React.PropTypes.object,
-      payroll: React.PropTypes.object.isRequired
+      selectedAccount: PropTypes.object,
+      payroll: PropTypes.object.isRequired
     },
     handleClick: function(event) {
       Service.lockPayroll(this.props.payroll.address);
@@ -304,7 +304,7 @@
 
   var PayrollStatus = React.createClass({
     propTypes: {
-      payroll: React.PropTypes.object.isRequired
+      payroll: PropTypes.object.isRequired
     },
     render: function() {
       if (this.props.payroll.locked) {
@@ -319,11 +319,11 @@
 
   var PayrollPanel = React.createClass({
     propTypes: {
-      selectedAccount: React.PropTypes.object,
-      payroll: React.PropTypes.object.isRequired,
-      processingPayroll: React.PropTypes.bool,
-      expanded: React.PropTypes.bool,
-      parent: React.PropTypes.string,
+      selectedAccount: PropTypes.object,
+      payroll: PropTypes.object.isRequired,
+      processingPayroll: PropTypes.bool,
+      expanded: PropTypes.bool,
+      parent: PropTypes.string,
     },
     componentDidMount: function() {
       var address = this.props.payroll.address;
@@ -403,9 +403,9 @@
 
   var PayrollAccordion = React.createClass({
     propTypes: {
-      selectedAccount: React.PropTypes.object,
-      payrolls: React.PropTypes.array,
-      processingPayroll: React.PropTypes.bool
+      selectedAccount: PropTypes.object,
+      payrolls: PropTypes.array,
+      processingPayroll: PropTypes.bool
     },
     render: function() {
       var accordionId = 'payroll-accordion';
@@ -433,7 +433,7 @@
 
   var MainComponent = React.createClass({
     propTypes: {
-      state: React.PropTypes.object.isRequired
+      state: PropTypes.object.isRequired
     },
     render: function() {
       var state = this.props.state;
