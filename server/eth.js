@@ -30,6 +30,12 @@ function checkDeployed() {
   SpiceMembers.deployed();
   SpiceHours.deployed();
   SpiceRates.deployed();
+
+  // We need at least 15 minutes until we timeout promises
+  SpiceMembers.synchronization_timeout = 900000;
+  SpiceHours.synchronization_timeout = 900000;
+  SpiceRates.synchronization_timeout = 900000;
+  SpicePayroll.synchronization_timeout = 900000;
 }
 
 function getAccounts() {
