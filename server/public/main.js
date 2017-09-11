@@ -44,8 +44,10 @@
       //  return;
       //}
     }
-    hoursEvents.push(event);
-    hoursEvents.sort(eventComparator);
+    // FIXME: We used to push and sort, but we have no timestamps so unshift instead...
+    //hoursEvents.push(event);
+    //hoursEvents.sort(eventComparator);
+    hoursEvents.unshift(event);
     refreshProfile();
   }
 
