@@ -39,9 +39,10 @@
   function addHoursEvent(event) {
     for (var i = 0; i < hoursEvents.length; i++) {
       // If event already exists, do not re-add it
-      if (eventId(hoursEvents[i]) === eventId(event)) {
-        return;
-      }
+      // FIXME: There is no way to construct unique ID for event with light mode, need to think of something else
+      //if (eventId(hoursEvents[i]) === eventId(event)) {
+      //  return;
+      //}
     }
     hoursEvents.push(event);
     hoursEvents.sort(eventComparator);
